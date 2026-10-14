@@ -145,6 +145,38 @@ function buildDetailsBody(lead, addr, returning) {
     `\nSubmitted ${new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' })}`;
 }
 
+// Jobber "request form" sections — these render on the request itself (like their own request form answers).
+function buildRequestForm(lead, addr, returning) {
+  const item = (label, answerText) => ({ label, answerText: String(answerText ?? '').slice(0, 1000) });
+  const sections = [];
+  const overview = [
+    item('Lead type', lead.commercial ? 'Commercial — special pricing by site visit' : (lead.in_area === false ? 'Residential — OUTSIDE service area' : 'Residential instant quote')),
+    item('Address', `${addr.street1}, ${addr.city}, ${addr.province} ${addr.postalCode}`),
+  ];
+  if (lead.commercial && lead.company) overview.push(item('Company / property', lead.company));
+  if (!lead.commercial) overview.push(item('Lot size', `${Number(lead.lot_sf || 0).toLocaleString('en-US')} sq ft (${lead.lot_source || 'customer entered'})` + (lead.home ? ` · Home: ${lead.home}` : '')));
+  overview.push(item('Landscape interest', lead.landscape_interest ? 'YES — call about design/build (patio, drainage, planting)' : 'No'));
+  overview.push(item('Client', returning ? 'Existing client' : 'New client'));
+  sections.push({ label: 'Instant quote site', items: overview });
+
+  const svc = (lead.services || []).map(s => item(s.name, s.price));
+  if (lead.total) svc.push(item('Total selected today', money(lead.total)));
+  sections.push({ label: 'Services selected', items: svc.length ? svc : [item('Services', '(none selected)')] });
+
+  const q = lead.quote || {};
+  const priced = [];
+  if (q.mow) priced.push(item('Weekly mowing', money(q.mow) + ' / mow'));
+  if (q.fert) priced.push(item('Fertilizer (per app, 5 apps)', money(q.fert)));
+  if (q.aer) priced.push(item('Aeration + overseeding', money(q.aer)));
+  if (q.spring) priced.push(item('Spring cleanup', money(q.spring)));
+  if (q.fall) priced.push(item(`Fall cleanup (${q.fallVisits === 2 ? '2 visits' : '1 visit'}${q.tree ? `, ${q.tree} tree cover` : ''})`, money(q.fall) + (q.promo ? ` — ${q.promo}` : '')));
+  if (q.gutter) priced.push(item(`Gutter cleaning (${q.stories || 1}-story)`, money(q.gutter)));
+  if (priced.length) sections.push({ label: 'All prices shown to customer', items: priced });
+
+  sections.push({ label: 'Customer notes', items: [item('Notes', lead.notes || '(none)'), item('Submitted', new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))] });
+  return { form: { sections } };
+}
+
 /* ---------- quote ---------- */
 function quoteLineItems(lead) {
   const q = lead.quote || {};           // exact prices from the site: {mow, fert, aer, spring, fall, fallVisits, gutter, stories}
@@ -197,11 +229,23 @@ async function createLead(env, lead) {
   const addr = { street1: a.street || '', city: a.city || '', province: a.state || 'IL', postalCode: a.zip || '', country: 'US' };
   const ids = await ensureClientAndProperty(env, lead);
 
-  const rr = await gql(env, `
+  const reqInput = {
+    clientId: ids.clientId, ...(ids.propertyId ? { propertyId: ids.propertyId } : {}),
+    title: (lead.commercial ? 'Instant Quote Site — Commercial' : (lead.in_area === false ? 'Instant Quote Site — Out of area' : 'Instant Quote Site')) + (lead.landscape_interest ? ' + Landscaping' : ''),
+  };
+  const reqMutation = `
     mutation ($input: RequestCreateInput!) {
       requestCreate(input: $input) { request { id } userErrors { message path } }
-    }`, { input: { clientId: ids.clientId, ...(ids.propertyId ? { propertyId: ids.propertyId } : {}), title: (lead.commercial ? 'Instant Quote Site — Commercial' : (lead.in_area === false ? 'Instant Quote Site — Out of area' : 'Instant Quote Site')) + (lead.landscape_interest ? ' + Landscaping' : '') } });
-  ue(rr.requestCreate, 'requestCreate');
+    }`;
+  let rr;
+  try {
+    rr = await gql(env, reqMutation, { input: { ...reqInput, requestDetails: buildRequestForm(lead, addr, ids.returning) } });
+    ue(rr.requestCreate, 'requestCreate');
+  } catch (e) {
+    console.error('requestCreate with form failed, retrying without form', e.message);
+    rr = await gql(env, reqMutation, { input: reqInput });
+    ue(rr.requestCreate, 'requestCreate');
+  }
   const requestId = rr.requestCreate.request.id;
 
   let quote = null, quoteError = null;
