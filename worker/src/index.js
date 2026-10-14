@@ -81,10 +81,12 @@ async function findClient(env, lead) {
         properties { id address { street1 city } }
       } } }`, { q: term });
     const nodes = d.clients?.nodes || [];
+    const last = String(lead.name || '').trim().split(/\s+/).slice(1).join(' ').toLowerCase();
+    const sameLast = c => last && String(c.lastName || '').trim().toLowerCase() === last;
     const hit = nodes.find(c =>
       (phone && (c.phones || []).some(p => digits(p.number) === phone)) ||
-      (email && (c.emails || []).some(e => String(e.address || '').toLowerCase() === email)));
-    if (hit) return hit;
+      (email && sameLast(c) && (c.emails || []).some(e => String(e.address || '').toLowerCase() === email)));
+    if (hit) { console.log('matched existing client', hit.id, 'via', term === phone ? 'phone' : 'email'); return hit; }
   }
   return null;
 }
