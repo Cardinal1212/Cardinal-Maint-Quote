@@ -2,6 +2,7 @@
 name = "cardinal-maint-quote"
 main = "worker/src/index.js"
 compatibility_date = "2026-09-01"
+keep_vars = true
 
 [vars]
 ALLOWED_ORIGINS = "https://cardinal1212.github.io,https://quote.cardinallm.net"
