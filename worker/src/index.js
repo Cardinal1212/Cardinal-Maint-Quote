@@ -98,11 +98,20 @@ async function createLead(env, lead) {
         userErrors { message path }
       }
     }`, {
-    input: { clientId, ...(propertyId ? { propertyId } : {}), title: `Instant quote: ${svcShort}`, details },
+    input: { clientId, ...(propertyId ? { propertyId } : {}), title: `Instant quote: ${svcShort}` },
   });
   const rc = reqRes.requestCreate;
   if (rc.userErrors && rc.userErrors.length) throw new Error('requestCreate: ' + rc.userErrors.map(e => e.message).join('; '));
-  return { clientId, propertyId, requestId: rc.request.id };
+  const requestId = rc.request.id;
+  try {
+    const noteRes = await gql(env, `
+      mutation ($requestId: EncodedId!, $input: RequestCreateNoteInput!) {
+        requestCreateNote(requestId: $requestId, input: $input) { userErrors { message path } }
+      }`, { requestId, input: { message: details } });
+    const ne = noteRes.requestCreateNote?.userErrors || [];
+    if (ne.length) console.error('note userErrors', ne);
+  } catch (e) { console.error('note failed', e.message); }
+  return { clientId, propertyId, requestId };
 }
 
 /* ---------- validation ---------- */
