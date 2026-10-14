@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cardinal Instant Quote</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one column, max 680px; a dark header band, then a stacked flow — address → property → services → booking. */
+:root{
+  --bg:#f3f5f2; --fg:#17201b; --muted:#5d6a62; --card:#ffffff; --line:#d6ddd8; --soft:#e9eee9;
+  --accent:#b3261e; --accent-fg:#ffffff; --ok:#2f7d4f; --warn:#9a6400; --warn-bg:#fff4dd;
+  --display:'Barlow Condensed',Impact,'Arial Narrow',sans-serif;
+  --body:'IBM Plex Sans','Segoe UI',Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#121714; --fg:#eef1ec; --muted:#9aa69e; --card:#1b221d; --line:#2c3630; --soft:#222b25;
+  --accent:#e2473d; --accent-fg:#ffffff; --ok:#5fc285; --warn:#e0a53a; --warn-bg:#2d2410; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#121714; --fg:#eef1ec; --muted:#9aa69e; --card:#1b221d; --line:#2c3630; --soft:#222b25;
+  --accent:#e2473d; --accent-fg:#ffffff; --ok:#5fc285; --warn:#e0a53a; --warn-bg:#2d2410; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+.band{background:#17201b;color:#f3f5f2}
+.band .in{max-width:680px;margin:0 auto;padding-block:22px 18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:4px}
+.brand{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:#f3b4ae}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,7vw,46px);line-height:1;margin:0;text-wrap:balance}
+.band p{margin:4px 0 0;color:#b8c2bb;max-width:52ch}
+.wrap{max-width:680px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+.step{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+h2{font-family:var(--display);font-weight:700;font-size:26px;line-height:1.05;margin:0 0 12px;text-wrap:balance}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+input[type=text],input[type=tel],input[type=email],input[type=number],select{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:520px){.row.c3{grid-template-columns:2fr 1fr 1fr}.row.c2{grid-template-columns:1fr 1fr}}
+.row>div{min-width:0}
+.btn{font:inherit;font-weight:600;font-size:16px;padding:12px 18px;border-radius:8px;border:1px solid transparent;cursor:pointer;background:var(--accent);color:var(--accent-fg)}
+.btn.sec{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn:disabled{opacity:.6;cursor:wait}
+.hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+.notice{border-radius:8px;padding:10px 12px;font-size:14px;margin-top:12px;background:var(--soft)}
+.notice.warn{background:var(--warn-bg);color:var(--fg)}
+.notice.err{background:var(--soft);border-left:4px solid var(--accent)}
+.prop{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:4px}
+.prop div{min-width:0}
+.prop b{display:block;font-family:var(--display);font-size:26px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.prop span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.svc{display:flex;flex-direction:column;gap:0}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:14px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0;padding-top:4px}
+.item input[type=checkbox]{width:20px;height:20px;margin-top:3px;accent-color:var(--accent)}
+.item .name{font-weight:600}
+.item .sub{font-size:13px;color:var(--muted);margin-top:2px}
+.item .price{font-family:var(--display);font-weight:700;font-size:24px;line-height:1;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.item .price small{display:block;font-family:var(--body);font-weight:400;font-size:12px;color:var(--muted);margin-top:3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font:inherit;font-size:13px;font-weight:500;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.addon{grid-column:2/4;margin:4px 0 0;padding:12px;border-radius:8px;background:var(--soft);display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start}
+.total{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-top:2px solid var(--fg);padding-top:12px;margin-top:6px}
+.total b{font-family:var(--display);font-size:32px;font-weight:700;font-variant-numeric:tabular-nums}
+.total span{color:var(--muted);font-size:14px}
+.fine{font-size:13px;color:var(--muted);margin:10px 0 0}
+.done{text-align:center;padding:14px 0}
+.done b{font-family:var(--display);font-size:28px;display:block}
+ul.sum{list-style:none;padding:0;margin:10px 0 0;font-size:14px}
+ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-top:1px dashed var(--line)}
+.foot{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+@media (prefers-reduced-motion:no-preference){.card{transition:opacity .25s}}
+</style>
+<meta name="description" content="Instant lawn care pricing from Cardinal Landscape Associates. Enter your address and see mowing, fertilizing, aeration and cleanup prices in seconds.">
+
+
+
+
+<div class="band"><div class="in">
+  <div class="brand">Cardinal Landscape Associates</div>
+  <h1>Your lawn price in 10 seconds.</h1>
+  <p>Type your address. We pull the lot size from county records and price mowing, fertilizing, aeration and cleanups on the spot.</p>
+</div></div>
+
+<div class="wrap">
+
+<section class="card" id="s1">
+  <p class="step">Step 1</p>
+  <h2>Where's the lawn?</h2>
+  <div class="row c3">
+    <div><label for="street">Street address</label><input type="text" id="street" placeholder="1344 Jill Terrace" autocomplete="street-address"></div>
+    <div><label for="city">City</label><input type="text" id="city" placeholder="Homewood" autocomplete="address-level2"></div>
+    <div><label for="state">State</label><select id="state"><option value="IL">Illinois</option><option value="IN">Indiana</option></select></div>
+  </div>
+  <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+    <button class="btn" id="go">See my price</button>
+    <button class="btn sec" id="manualBtn" type="button">I know my lot size</button>
+  </div>
+  <div id="manual" hidden style="margin-top:12px">
+    <div class="row c2">
+      <div><label for="lotsf">Lot size (sq ft)</label><input type="number" id="lotsf" placeholder="7500" min="1000" step="100"></div>
+      <div><label for="stories">Home</label><select id="stories"><option value="1">1 story</option><option value="split">Split level</option><option value="2">2 story</option></select></div>
+    </div>
+    <p class="hint">Tip: a typical south-suburb lot is 6,000–8,000 sq ft. A quarter acre is 10,900.</p>
+    <button class="btn" id="goManual" type="button" style="margin-top:10px">Price it</button>
+  </div>
+  <div id="status" class="notice" hidden></div>
+</section>
+
+<section class="card" id="s2" hidden>
+  <p class="step">Step 2</p>
+  <h2>Your property</h2>
+  <div class="prop">
+    <div><b id="pLot">—</b><span>Lot sq ft</span></div>
+    <div><b id="pAcre">—</b><span>Acres</span></div>
+    <div><b id="pHome">—</b><span>Home</span></div>
+    <div><b id="pSrc">—</b><span>Source</span></div>
+  </div>
+  <p class="hint" id="pAddr"></p>
+  <div id="area" class="notice warn" hidden>This address is outside our usual service area. We'll confirm availability before scheduling.</div>
+</section>
+
+<section class="card" id="s3" hidden>
+  <p class="step">Step 3</p>
+  <h2>Pick your services</h2>
+  <div class="svc" id="svc"></div>
+  <div class="total"><span>Selected today</span><b id="total">$0</b></div>
+  <p class="fine">Estimates are based on county lot size. Final price is confirmed on the first visit. First mow may be higher if the lawn is overgrown.</p>
+</section>
+
+<section class="card" id="s4" hidden>
+  <p class="step">Step 4</p>
+  <h2>Lock it in</h2>
+  <form id="book">
+    <div class="row c2">
+      <div><label for="name">Name</label><input type="text" id="name" required autocomplete="name"></div>
+      <div><label for="phone">Phone</label><input type="tel" id="phone" required autocomplete="tel"></div>
+    </div>
+    <div style="margin-top:10px"><label for="email">Email</label><input type="email" id="email" autocomplete="email"></div>
+    <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn" type="submit">Request service</button>
+      <span class="hint" style="margin:0">No payment now. We confirm within one business day.</span>
+    </div>
+  </form>
+  <div id="thanks" class="done" hidden>
+    <b>Got it. We'll confirm shortly.</b>
+    <div id="thanksBody"></div>
+  </div>
+</section>
+
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana</p>
+</div>
+
+<script>
+/* ===================== PRICING (edit here) ===================== */
+const BASE_SF = 9000;                 // flat pricing up to this lot size
+const RATES = {
+  mow:    {base:45,  per1k:2,  label:'Weekly mowing',            unit:'per cut',  sub:'Mow, trim, blow. Edging every other week. April–November.'},
+  fert:   {base:90,  per1k:5,  label:'5-step fertilizer program', unit:'per app',  sub:'Five applications across the season. Price shown is per application.'},
+  aer:    {base:175, per1k:10, label:'Aeration + overseeding',    unit:'one visit',sub:'Core aeration with overseed. Spring or fall.'},
+  spring: {base:295, per1k:4,  label:'Spring cleanup',            unit:'one visit',sub:'Beds and lawn cleared, debris hauled, perennials cut back.'},
+  fall:   {base:295, per1k:6,  label:'Fall leaf cleanup',         unit:'',         sub:'Leaves blown out of beds and bushes, vacuumed off the property.'},
+};
+const FALL_2VISIT = 1.6;              // two-visit fall = 1.6 × single
+const TREE = {light:1.0, avg:1.15, heavy:1.35};   // fall cleanup multiplier
+const GUTTER = {'1':195, split:245, '2':295, bigHome:50, bigHomeSf:3000};  // add-on, only with a cleanup
+const RANGE_UP = 1.10;                // show "from–to" as price → price×1.10
+const SERVICE_ZIPS = ['60409','60411','60417','60419','60422','60425','60426','60429','60430','60438','60443','60461','60462','60464','60466','60469','60471','60473','60475','60476','60478','60484','46307','46311','46319','46321','46322','46342','46356','46373','46375','46410','46311'];
+/* =============================================================== */
+
+const r5 = x => Math.round(x/5)*5;
+const over = sf => Math.max(0, sf-BASE_SF)/1000;
+const price = (k, sf) => r5(RATES[k].base + RATES[k].per1k*over(sf));
+const money = n => '$'+Math.round(n).toLocaleString();
+const $ = id => document.getElementById(id);
+
+let booted = false;
+let P = {lot:0, stories:null, bldg:null, src:'', addr:'', zip:''};
+let sel = {mow:true, fert:false, aer:false, spring:false, fall:false, fallVisits:1, tree:'avg', gutter:false, stories:'1'};
+
+/* ---------- lookups ---------- */
+const SOC = 'https://datacatalog.cookcountyil.gov/resource/';
+function parseStreet(s){
+  const m = s.trim().match(/^(\d+)\s+([A-Za-z0-9]+)/); return m ? {num:m[1], word:m[2].toUpperCase()} : null;
+}
+async function jget(url){ const r = await fetch(url); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+
+async function lookupCook(num, word, city){
+  const rows = await jget(SOC+'3723-97qp.json?year=2025&$limit=25&$q='+encodeURIComponent(num+' '+word));
+  const c = city.toUpperCase();
+  let hit = rows.find(r => (r.prop_address_full||'').startsWith(num+' ') && (r.prop_address_city_name||'').startsWith(c.split(' ')[0]));
+  if(!hit) hit = rows.find(r => (r.prop_address_full||'').startsWith(num+' '));
+  if(!hit) return null;
+  const ch = await jget(SOC+'x54s-btds.json?pin='+hit.pin+'&$order=year%20DESC&$limit=1');
+  if(!ch.length) return null;
+  const c0 = ch[0], t = (c0.char_type_resd||'');
+  const stories = /split/i.test(t) ? 'split' : /^2|two/i.test(t) ? '2' : '1';
+  return {lot:+c0.char_land_sf, bldg:+c0.char_bldg_sf||null, stories, src:'Cook County', addr:hit.prop_address_full+', '+hit.prop_address_city_name, zip:hit.prop_address_zipcode_1||''};
+}
+async function lookupIndiana(num, word){
+  const where = encodeURIComponent(`prop_add LIKE '${num}%${word}%' AND county_id=45`);
+  const d = await jget('https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_2024/FeatureServer/0/query?where='+where+'&outFields=prop_add,prop_city,prop_zip,SHAPE__Area&returnGeometry=false&f=json');
+  const f = (d.features||[]).map(x=>x.attributes).filter(a=>!/APPR/.test(a.prop_add||''))[0];
+  if(!f) return null;
+  return {lot:Math.round(f.SHAPE__Area*10.7639), bldg:null, stories:null, src:'Lake County IN', addr:f.prop_add+', '+(f.prop_city||''), zip:f.prop_zip||''};
+}
+async function lookupWill(street, city){
+  const g = await jget('https://gis.willcountyillinois.com/hosting/rest/services/Locators/WillCountyLocator_AddPts/GeocodeServer/findAddressCandidates?SingleLine='+encodeURIComponent(street+' '+city)+'&outFields=*&maxLocations=1&outSR=3435&f=json');
+  const c = (g.candidates||[])[0]; if(!c || c.score<80) return null;
+  const q = await jget('https://gis.willcountyillinois.com/server/rest/services/Basemap/Parcels_20/MapServer/0/query?geometry='+c.location.x+','+c.location.y+'&geometryType=esriGeometryPoint&inSR=3435&outFields=PIN,SHAPE_Area&returnGeometry=false&f=json');
+  const f = (q.features||[])[0]; if(!f) return null;
+  return {lot:Math.round(f.attributes.SHAPE_Area), bldg:null, stories:null, src:'Will County', addr:c.address, zip:''};
+}
+
+async function lookup(){
+  const street=$('street').value, city=$('city').value, st=$('state').value;
+  const ps = parseStreet(street);
+  if(!ps){ setStatus('Enter a street number and name, like "1344 Jill Terrace".', 'err'); return; }
+  const btn=$('go'); btn.disabled=true; setStatus('Checking county records…');
+  try{
+    let res=null;
+    if(st==='IN') res = await lookupIndiana(ps.num, ps.word);
+    else { res = await lookupCook(ps.num, ps.word, city); if(!res) res = await lookupWill(street, city); }
+    if(!res){ setStatus("We couldn't find that address in county records. Check the spelling, or enter the lot size yourself.", 'err'); $('manual').hidden=false; return; }
+    setStatus('', ''); $('status').hidden=true;
+    show(res);
+  }catch(e){
+    setStatus("Automatic lookup isn't available in this preview. Enter the lot size to see pricing — the live site will pull it automatically.", 'warn');
+    $('manual').hidden=false;
+  }finally{ btn.disabled=false; }
+}
+function setStatus(t, kind){ const s=$('status'); s.textContent=t; s.className='notice '+(kind||''); s.hidden=!t; }
+
+/* ---------- render ---------- */
+function show(res){
+  P = res; sel.stories = res.stories || sel.stories;
+  $('pLot').textContent = res.lot.toLocaleString();
+  $('pAcre').textContent = (res.lot/43560).toFixed(2);
+  $('pHome').textContent = res.stories ? ({'1':'1 story',split:'Split',2:'2 story'})[res.stories] + (res.bldg? ' · '+res.bldg.toLocaleString()+' sf':'') : 'Not on file';
+  $('pSrc').textContent = res.src;
+  $('pAddr').textContent = res.addr || '';
+  $('area').hidden = !res.zip || SERVICE_ZIPS.includes(res.zip);
+  $('s2').hidden=false; $('s3').hidden=false; $('s4').hidden=false;
+  renderServices();
+  if(booted) $('s2').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function fallPrice(){ let p = price('fall', P.lot) * TREE[sel.tree]; if(sel.fallVisits===2) p*=FALL_2VISIT; return r5(p); }
+function gutterPrice(){ let g = GUTTER[sel.stories]||GUTTER['1']; if(P.bldg && P.bldg>GUTTER.bigHomeSf) g+=GUTTER.bigHome; return g; }
+function rangeTxt(p){ return money(p)+'–'+money(r5(p*RANGE_UP)); }
+
+function item(key, name, sub, priceHtml, extra){
+  return `<div class="item"><input type="checkbox" id="chk_${key}" ${sel[key]?'checked':''} aria-label="${name}">
+    <div><div class="name">${name}</div><div class="sub">${sub}</div>${extra||''}</div>
+    <div class="price">${priceHtml}</div></div>`;
+}
+function renderServices(){
+  const sf=P.lot;
+  const treeChips = `<div class="chips" role="group" aria-label="Tree cover">${['light','avg','heavy'].map(k=>`<button type="button" class="chip" data-tree="${k}" aria-pressed="${sel.tree===k}">${{light:'Few trees',avg:'Some trees',heavy:'Heavy trees'}[k]}</button>`).join('')}</div>
+    <div class="chips" role="group" aria-label="Visits">${[1,2].map(v=>`<button type="button" class="chip" data-visits="${v}" aria-pressed="${sel.fallVisits===v}">${v===1?'One visit':'Two visits (Nov + Dec)'}</button>`).join('')}</div>`;
+  const cleanupOn = sel.spring||sel.fall;
+  const gutterExtra = P.stories ? '' : `<div class="chips" role="group" aria-label="Stories">${[['1','1 story'],['split','Split level'],['2','2 story']].map(([k,l])=>`<button type="button" class="chip" data-stories="${k}" aria-pressed="${sel.stories===k}">${l}</button>`).join('')}</div>`;
+  const gutter = cleanupOn ? `<div class="addon"><input type="checkbox" id="chk_gutter" ${sel.gutter?'checked':''} aria-label="Gutter cleaning">
+      <div><div class="name">Add gutter cleaning while we're there</div><div class="sub">Only offered with a cleanup. We blow the gutters first, then the lawn and beds.</div>${gutterExtra}</div>
+      <div class="price">${money(gutterPrice())}<small>add-on</small></div></div>` : '';
+  $('svc').innerHTML =
+    item('mow', RATES.mow.label, RATES.mow.sub, `${rangeTxt(price('mow',sf))}<small>${RATES.mow.unit}</small>`) +
+    item('fert', RATES.fert.label, RATES.fert.sub, `${rangeTxt(price('fert',sf))}<small>${RATES.fert.unit} · ${money(price('fert',sf)*5)} season</small>`) +
+    item('aer', RATES.aer.label, RATES.aer.sub, `${rangeTxt(price('aer',sf))}<small>${RATES.aer.unit}</small>`) +
+    item('spring', RATES.spring.label, RATES.spring.sub, `${rangeTxt(price('spring',sf))}<small>${RATES.spring.unit}</small>`) +
+    item('fall', RATES.fall.label, RATES.fall.sub, `${rangeTxt(fallPrice())}<small>${sel.fallVisits===2?'two visits':'one visit'}</small>`, treeChips) +
+    gutter;
+  renderTotal();
+}
+function renderTotal(){
+  let t=0;
+  if(sel.mow) t+=price('mow',P.lot);
+  if(sel.fert) t+=price('fert',P.lot);
+  if(sel.aer) t+=price('aer',P.lot);
+  if(sel.spring) t+=price('spring',P.lot);
+  if(sel.fall) t+=fallPrice();
+  if((sel.spring||sel.fall) && sel.gutter) t+=gutterPrice();
+  $('total').textContent = money(t);
+}
+$('svc').addEventListener('change', e=>{
+  const id=e.target.id; if(!id.startsWith('chk_')) return;
+  sel[id.slice(4)] = e.target.checked;
+  if(id==='chk_spring'||id==='chk_fall') renderServices(); else renderTotal();
+});
+$('svc').addEventListener('click', e=>{
+  const b=e.target.closest('button.chip'); if(!b) return;
+  if(b.dataset.tree) sel.tree=b.dataset.tree;
+  if(b.dataset.visits) sel.fallVisits=+b.dataset.visits;
+  if(b.dataset.stories) sel.stories=b.dataset.stories;
+  renderServices();
+});
+
+/* ---------- inputs ---------- */
+$('go').addEventListener('click', lookup);
+$('street').addEventListener('keydown', e=>{ if(e.key==='Enter') lookup(); });
+$('city').addEventListener('keydown', e=>{ if(e.key==='Enter') lookup(); });
+$('manualBtn').addEventListener('click', ()=>{ $('manual').hidden=!$('manual').hidden; });
+$('goManual').addEventListener('click', ()=>{
+  const sf=+$('lotsf').value; if(!sf||sf<1000){ setStatus('Enter a lot size of at least 1,000 sq ft.','err'); return; }
+  setStatus('',''); $('status').hidden=true;
+  show({lot:sf, bldg:null, stories:$('stories').value, src:'You entered', addr:[$('street').value,$('city').value].filter(Boolean).join(', '), zip:''});
+});
+$('book').addEventListener('submit', e=>{
+  e.preventDefault();
+  const lines=[]; const sf=P.lot;
+  if(sel.mow) lines.push(['Weekly mowing', rangeTxt(price('mow',sf))+' / cut']);
+  if(sel.fert) lines.push(['5-step fertilizer', rangeTxt(price('fert',sf))+' / app']);
+  if(sel.aer) lines.push(['Aeration + overseeding', rangeTxt(price('aer',sf))]);
+  if(sel.spring) lines.push(['Spring cleanup', rangeTxt(price('spring',sf))]);
+  if(sel.fall) lines.push(['Fall cleanup ('+sel.fallVisits+' visit'+(sel.fallVisits>1?'s':'')+')', rangeTxt(fallPrice())]);
+  if((sel.spring||sel.fall)&&sel.gutter) lines.push(['Gutter cleaning', money(gutterPrice())]);
+  $('thanksBody').innerHTML = `<div class="hint">${$('name').value} · ${$('phone').value}${$('email').value?' · '+$('email').value:''}<br>${P.addr} · ${sf.toLocaleString()} sq ft</div>
+    <ul class="sum">${lines.map(l=>`<li><span>${l[0]}</span><span>${l[1]}</span></li>`).join('')||'<li><span>No services selected</span><span></span></li>'}</ul>
+    <p class="hint">Prototype: on the live site this creates a client and request in Jobber automatically.</p>`;
+  $('book').hidden=true; $('thanks').hidden=false;
+});
+
+/* Opens in a working state so the flow is visible before any lookup. */
+booted = false;
+show({lot:7500, bldg:1205, stories:'1', src:'Example', addr:'Example: 2911 194th St, Lansing (replace with a real address above)', zip:'60438'});
+booted = true;
+</script>
+
+</body>
+</html>
