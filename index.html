@@ -47,6 +47,8 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px
 .rev{flex:1 1 220px;min-width:0;font-size:14px;color:var(--band-fg);background:var(--soft);border-radius:8px;padding:10px 12px}
 .rev b{display:block;color:var(--blue);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
 .trust{font-size:13px;color:var(--band-muted)}
+.promo{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;font-size:14px}
+.promo small{display:block;font-weight:400;font-size:12px;opacity:.9}
 .trust{color:var(--accent)}
 .trust span{color:var(--band-fg);font-weight:600;margin-left:6px}
 .trust .t2{color:var(--band-muted);font-weight:500}
@@ -129,6 +131,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
   <div id="status" class="notice" hidden></div>
   <div class="reviews" id="reviews" hidden></div>
+  <div class="promo" id="promo" hidden></div>
 </div></div>
 
 <div class="wrap">
@@ -172,7 +175,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v14</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v15</span></p>
 </div>
 
 <script>
@@ -189,6 +192,7 @@ const FALL_2VISIT = 1.6;              // two-visit fall = 1.6 × single
 const TREE = {light:1.0, avg:1.15, heavy:1.35};   // fall cleanup multiplier
 const GUTTER = {'1':195, split:245, '2':295, bigHome:50, bigHomeSf:3000};  // add-on, only with a cleanup
 const RANGE_UP = 1.10;                // show "from–to" as price → price×1.10
+const PROMO = { enabled:true, label:'Fall special: 10% off a two-visit leaf cleanup', pct:10, applies:['fall2'], ends:'2026-12-15' };  // switches itself off after `ends`
 const PHONE = '(708) 527-1707';       // shows as tap-to-call in the header
 const REVIEWS = [];                   // e.g. [{q:'Showed up on time, lawn looks great.', who:'Maria R., Lansing'}]
 const TRUST_LINE = '4.8★ on Google · 110+ reviews';   // shown under the headline when REVIEWS is empty
@@ -201,6 +205,8 @@ const r5 = x => Math.round(x/5)*5;
 const over = sf => Math.max(0, sf-BASE_SF)/1000;
 const price = (k, sf) => r5(RATES[k].base + RATES[k].per1k*over(sf));
 const money = n => '$'+Math.round(n).toLocaleString();
+const promoActive = () => PROMO.enabled && new Date() <= new Date(PROMO.ends+'T23:59:59');
+const promoFor = key => promoActive() && PROMO.applies.includes(key) ? PROMO.pct : 0;
 const $ = id => document.getElementById(id);
 
 let booted = false;
@@ -292,7 +298,8 @@ function show(res){
   $('manual').hidden=true;
 }
 
-function fallPrice(){ let p = price('fall', P.lot) * TREE[sel.tree]; if(sel.fallVisits===2) p*=FALL_2VISIT; return r5(p); }
+function fallBase(){ let p = price('fall', P.lot) * TREE[sel.tree]; if(sel.fallVisits===2) p*=FALL_2VISIT; return r5(p); }
+function fallPrice(){ const b=fallBase(); const pct = sel.fallVisits===2 ? promoFor('fall2') : promoFor('fall1'); return pct ? r5(b*(1-pct/100)) : b; }
 function gutterPrice(){ let g = GUTTER[sel.stories]||GUTTER['1']; if(P.bldg && P.bldg>GUTTER.bigHomeSf) g+=GUTTER.bigHome; return g; }
 function rangeTxt(p){ return money(p)+'–'+money(r5(p*RANGE_UP)); }
 
@@ -315,7 +322,7 @@ function renderServices(){
     fert:   item('fert', RATES.fert.label, RATES.fert.sub, `${exactOrRange(price('fert',sf))}<small>${RATES.fert.unit} · ${money(price('fert',sf)*5)} season</small>`),
     aer:    item('aer', RATES.aer.label, RATES.aer.sub, `${exactOrRange(price('aer',sf))}<small>${RATES.aer.unit}</small>`),
     spring: item('spring', RATES.spring.label, RATES.spring.sub, `${exactOrRange(price('spring',sf))}<small>${RATES.spring.unit}</small>`),
-    fall:   item('fall', RATES.fall.label, RATES.fall.sub, `${exactOrRange(fallPrice())}<small>${sel.fallVisits===2?'two visits':'one visit'}</small>`, treeChips),
+    fall:   item('fall', RATES.fall.label, RATES.fall.sub, `${fallPrice()<fallBase()?`<s style="font-size:14px;color:var(--muted);font-weight:500">${money(fallBase())}</s> `:''}${exactOrRange(fallPrice())}<small>${sel.fallVisits===2?'two visits':'one visit'}${fallPrice()<fallBase()?` · ${PROMO.pct}% off`:''}</small>`, treeChips),
   };
   const order = FALL_SEASON ? ['fall','aer','mow','fert','spring'] : ['mow','fert','spring','aer','fall'];
   $('svc').innerHTML = order.map(k=>rows[k]).join('') + gutter;
@@ -456,7 +463,7 @@ $('book').addEventListener('submit', async e=>{
     in_area: P.inArea!==false,
     commercial: COMMERCIAL, company: COMMERCIAL ? $('company').value.trim() : '',
     selected:{mow:!!sel.mow, fert:!!sel.fert, aer:!!sel.aer, spring:!!sel.spring, fall:!!sel.fall, gutter:!!((sel.spring||sel.fall)&&sel.gutter)},
-    quote: (P.inArea===false || COMMERCIAL) ? {} : {mow:price('mow',sf), fert:price('fert',sf), aer:price('aer',sf), spring:price('spring',sf), fall:fallPrice(), fallVisits:sel.fallVisits, gutter:gutterPrice(), stories:sel.stories, tree:sel.tree}
+    quote: (P.inArea===false || COMMERCIAL) ? {} : {mow:price('mow',sf), fert:price('fert',sf), aer:price('aer',sf), spring:price('spring',sf), fall:fallPrice(), fallVisits:sel.fallVisits, gutter:gutterPrice(), stories:sel.stories, tree:sel.tree, fallBase:fallBase(), promo: (fallPrice()<fallBase()) ? PROMO.label+' ('+PROMO.pct+'% off)' : ''}
   };
   const btn=e.target.querySelector('button[type=submit]'); const err=$('bookErr'); err.hidden=true;
   if(COMMERCIAL && !$('commAddr').value.trim()){ err.textContent='Add the property address so we can schedule the visit.'; err.hidden=false; return; }
@@ -481,6 +488,7 @@ $('book').addEventListener('submit', async e=>{
 /* Opens in a working state so the flow is visible before any lookup. */
 booted = false;
 if(OFFICE) $('officeBadge').hidden=false;
+if(promoActive()){ const d=new Date(PROMO.ends+'T12:00:00'); $('promo').innerHTML=`${PROMO.label}<small>Pick "Two visits" under fall cleanup. Through ${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}.</small>`; $('promo').hidden=false; }
 if(PHONE){ $('phoneTxt').textContent=PHONE; $('phoneLink').href='tel:'+PHONE.replace(/\D/g,''); $('phoneLink').hidden=false; }
 if(REVIEWS.length){ $('reviews').innerHTML=REVIEWS.slice(0,3).map(r=>`<div class="rev">“${r.q}”<b>${r.who}</b></div>`).join(''); $('reviews').hidden=false; }
 else if(TRUST_LINE){ $('reviews').innerHTML=`<div class="trust">★★★★★ <span>${TRUST_LINE}</span>${TRUST_LINE_2?`<span class="t2">· ${TRUST_LINE_2}</span>`:''}</div>`; $('reviews').hidden=false; }

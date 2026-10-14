@@ -152,7 +152,7 @@ function quoteLineItems(lead) {
   push('mow', PRODUCTS.mow, q.mow, DESC.mow);
   push('fert', PRODUCTS.fert, q.fert, DESC.fert);
   push('aer', fall ? PRODUCTS.aerF : PRODUCTS.aerS, q.aer, DESC.aer);
-  if (fall) { push('fall', q.fallVisits === 2 ? PRODUCTS.fall2 : PRODUCTS.fall1, q.fall, q.fallVisits === 2 ? DESC.fall2 : DESC.fall1); }
+  if (fall) { const promoNote = q.promo ? `\n\n${q.promo}` : ''; push('fall', q.fallVisits === 2 ? PRODUCTS.fall2 : PRODUCTS.fall1, q.fall, (q.fallVisits === 2 ? DESC.fall2 : DESC.fall1) + promoNote); }
   else { push('spring', PRODUCTS.spring, q.spring, DESC.spring); }
   if (sel.spring || sel.fall) push('gutter', fall ? PRODUCTS.gutF : PRODUCTS.gutS, q.gutter, DESC.gut);
   // Put the services the customer picked first.
