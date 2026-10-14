@@ -4,31 +4,42 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cardinal Instant Quote</title>
+<link rel="icon" type="image/png" href="icon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 /* Layout: one column, max 680px; a dark header band, then a stacked flow — address → property → services → booking. */
 :root{
-  --bg:#f3f5f2; --fg:#17201b; --muted:#5d6a62; --card:#ffffff; --line:#d6ddd8; --soft:#e9eee9;
-  --accent:#b3261e; --accent-fg:#ffffff; --ok:#2f7d4f; --warn:#9a6400; --warn-bg:#fff4dd;
+  --bg:#f4f5f7; --fg:#1c2126; --muted:#6b7076; --card:#ffffff; --line:#d9dde3; --soft:#eceff3;
+  --accent:#e81820; --accent-fg:#ffffff; --blue:#1840b8; --gray:#888888; --ok:#2f7d4f; --warn:#9a6400; --warn-bg:#fff4dd;
+  --band:#ffffff; --band-fg:#1c2126; --band-muted:#6b7076;
   --display:'Barlow Condensed',Impact,'Arial Narrow',sans-serif;
   --body:'IBM Plex Sans','Segoe UI',Helvetica,Arial,sans-serif;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#121714; --fg:#eef1ec; --muted:#9aa69e; --card:#1b221d; --line:#2c3630; --soft:#222b25;
-  --accent:#e2473d; --accent-fg:#ffffff; --ok:#5fc285; --warn:#e0a53a; --warn-bg:#2d2410; color-scheme:dark }}
+  --bg:#14171b; --fg:#eef0f3; --muted:#a3a9b1; --card:#1d2126; --line:#2e343b; --soft:#242930;
+  --accent:#ff3b42; --accent-fg:#ffffff; --blue:#6f8cff; --gray:#a0a0a0; --ok:#5fc285; --warn:#e0a53a; --warn-bg:#2d2410;
+  --band:#0f1114; --band-fg:#eef0f3; --band-muted:#a3a9b1; color-scheme:dark }}
 :root[data-theme="dark"]{
-  --bg:#121714; --fg:#eef1ec; --muted:#9aa69e; --card:#1b221d; --line:#2c3630; --soft:#222b25;
-  --accent:#e2473d; --accent-fg:#ffffff; --ok:#5fc285; --warn:#e0a53a; --warn-bg:#2d2410; color-scheme:dark }
+  --bg:#14171b; --fg:#eef0f3; --muted:#a3a9b1; --card:#1d2126; --line:#2e343b; --soft:#242930;
+  --accent:#ff3b42; --accent-fg:#ffffff; --blue:#6f8cff; --gray:#a0a0a0; --ok:#5fc285; --warn:#e0a53a; --warn-bg:#2d2410;
+  --band:#0f1114; --band-fg:#eef0f3; --band-muted:#a3a9b1; color-scheme:dark }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
-.band{background:#17201b;color:#f3f5f2}
+.band{background:var(--band);color:var(--band-fg);border-bottom:4px solid var(--accent)}
+.logo{display:block;width:min(260px,70vw);height:auto;margin-bottom:6px}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.phone{font-family:var(--display);font-weight:700;font-size:20px;color:var(--blue);text-decoration:none;white-space:nowrap}
+.phone small{display:block;font-family:var(--body);font-weight:500;font-size:12px;color:var(--band-muted);letter-spacing:.06em;text-transform:uppercase}
+.reviews{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.rev{flex:1 1 220px;min-width:0;font-size:14px;color:var(--band-fg);background:var(--soft);border-radius:8px;padding:10px 12px}
+.rev b{display:block;color:var(--blue);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
 .band .in{max-width:680px;margin:0 auto;padding-block:22px 18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:4px}
-.brand{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:#f3b4ae}
+.brand{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray)}
 h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,7vw,46px);line-height:1;margin:0;text-wrap:balance}
-.band p{margin:4px 0 0;color:#b8c2bb;max-width:52ch}
+.band p{margin:4px 0 0;color:var(--band-muted);max-width:52ch}
 .wrap{max-width:680px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
-.step{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+.step{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin:0 0 6px}
 h2{font-family:var(--display);font-weight:700;font-size:26px;line-height:1.05;margin:0 0 12px;text-wrap:balance}
 label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
 input[type=text],input[type=tel],input[type=email],input[type=number],select{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
@@ -62,9 +73,9 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);ou
 .item .price small{display:block;font-family:var(--body);font-weight:400;font-size:12px;color:var(--muted);margin-top:3px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .chip{font:inherit;font-size:13px;font-weight:500;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
-.chip[aria-pressed=true]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chip[aria-pressed=true]{background:var(--blue);color:#fff;border-color:var(--blue)}
 .addon{grid-column:2/4;margin:4px 0 0;padding:12px;border-radius:8px;background:var(--soft);display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start}
-.total{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-top:2px solid var(--fg);padding-top:12px;margin-top:6px}
+.total{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-top:2px solid var(--accent);padding-top:12px;margin-top:6px}
 .total b{font-family:var(--display);font-size:32px;font-weight:700;font-variant-numeric:tabular-nums}
 .total span{color:var(--muted);font-size:14px}
 .fine{font-size:13px;color:var(--muted);margin:10px 0 0}
@@ -81,9 +92,14 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
 
 
 <div class="band"><div class="in">
-  <div class="brand">Cardinal Landscape Associates <span id="officeBadge" hidden style="margin-left:8px;padding:2px 8px;border-radius:999px;background:#f3b4ae;color:#17201b;font-size:11px;letter-spacing:.06em">OFFICE MODE · exact prices</span></div>
+  <div class="topline">
+    <img class="logo" src="logo.png" alt="Cardinal Landscaping, Maintenance &amp; Snow Removal">
+    <a class="phone" id="phoneLink" href="#" hidden><small>Call or text</small><span id="phoneTxt"></span></a>
+  </div>
+  <div class="brand">Instant lawn pricing <span id="officeBadge" hidden style="margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--accent);color:#fff;font-size:11px;letter-spacing:.06em">OFFICE MODE · exact prices</span></div>
   <h1>Your lawn price in 10 seconds.</h1>
   <p>Type your address. We pull the lot size from county records and price mowing, fertilizing, aeration and cleanups on the spot.</p>
+  <div class="reviews" id="reviews" hidden></div>
 </div></div>
 
 <div class="wrap">
@@ -156,7 +172,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v8</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v9</span></p>
 </div>
 
 <script>
@@ -173,6 +189,8 @@ const FALL_2VISIT = 1.6;              // two-visit fall = 1.6 × single
 const TREE = {light:1.0, avg:1.15, heavy:1.35};   // fall cleanup multiplier
 const GUTTER = {'1':195, split:245, '2':295, bigHome:50, bigHomeSf:3000};  // add-on, only with a cleanup
 const RANGE_UP = 1.10;                // show "from–to" as price → price×1.10
+const PHONE = '';                     // e.g. '(708) 555-0123' — shows in the header when set
+const REVIEWS = [];                   // e.g. [{q:'Showed up on time, lawn looks great.', who:'Maria R., Lansing'}]
 const LEAD_ENDPOINT = 'https://cardinal-maint-quote.office-333.workers.dev/lead';             // Cloudflare Worker URL + '/lead' once deployed, e.g. 'https://cardinal-quote-leads.xxx.workers.dev/lead'
 const SERVICE_ZIPS = ['60409','60411','60417','60419','60422','60425','60426','60429','60430','60438','60443','60461','60462','60464','60466','60469','60471','60473','60475','60476','60478','60484','46307','46311','46319','46321','46322','46342','46356','46373','46375','46410','46311'];
 /* =============================================================== */
@@ -460,6 +478,8 @@ $('book').addEventListener('submit', async e=>{
 /* Opens in a working state so the flow is visible before any lookup. */
 booted = false;
 if(OFFICE) $('officeBadge').hidden=false;
+if(PHONE){ $('phoneTxt').textContent=PHONE; $('phoneLink').href='tel:'+PHONE.replace(/\D/g,''); $('phoneLink').hidden=false; }
+if(REVIEWS.length){ $('reviews').innerHTML=REVIEWS.slice(0,3).map(r=>`<div class="rev">“${r.q}”<b>${r.who}</b></div>`).join(''); $('reviews').hidden=false; }
 show({lot:7500, bldg:1205, stories:'1', src:'Example', addr:'Example: 2911 194th St, Lansing (replace with a real address above)', zip:'60438'});
 booted = true;
 </script>
