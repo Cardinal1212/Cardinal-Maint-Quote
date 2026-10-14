@@ -62,7 +62,7 @@ async function createLead(env, lead) {
   const clientRes = await gql(env, `
     mutation ($input: ClientCreateInput!) {
       clientCreate(input: $input) {
-        client { id properties { nodes { id } } }
+        client { id properties { id } }
         userErrors { message path }
       }
     }`, {
@@ -77,7 +77,7 @@ async function createLead(env, lead) {
   const cc = clientRes.clientCreate;
   if (cc.userErrors && cc.userErrors.length) throw new Error('clientCreate: ' + cc.userErrors.map(e => e.message).join('; '));
   const clientId = cc.client.id;
-  const propertyId = (cc.client.properties?.nodes || [])[0]?.id;
+  const props = cc.client.properties; const propertyId = (Array.isArray(props) ? props[0] : (props?.nodes || [])[0])?.id;
 
   const lines = (lead.services || []).map(s => `• ${s.name}: ${s.price}`).join('\n');
   const details =
