@@ -133,12 +133,15 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
 <section class="card" id="s4" hidden>
   <p class="step">Step 4</p>
   <h2>Lock it in</h2>
-  <form id="book">
+  <form id="book" style="position:relative">
     <div class="row c2">
       <div><label for="name">Name</label><input type="text" id="name" required autocomplete="name"></div>
       <div><label for="phone">Phone</label><input type="tel" id="phone" required autocomplete="tel"></div>
     </div>
     <div style="margin-top:10px"><label for="email">Email</label><input type="email" id="email" autocomplete="email"></div>
+    <div style="margin-top:10px"><label for="notes">Anything we should know? (gate code, dogs, overgrown lawn)</label><input type="text" id="notes"></div>
+    <div style="position:absolute;left:-9999px" aria-hidden="true"><label for="website">Website</label><input type="text" id="website" tabindex="-1" autocomplete="off"></div>
+    <div id="bookErr" class="notice err" hidden></div>
     <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <button class="btn" type="submit">Request service</button>
       <span class="hint" style="margin:0">No payment now. We confirm within one business day.</span>
@@ -150,7 +153,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v4</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v5</span></p>
 </div>
 
 <script>
@@ -167,6 +170,7 @@ const FALL_2VISIT = 1.6;              // two-visit fall = 1.6 × single
 const TREE = {light:1.0, avg:1.15, heavy:1.35};   // fall cleanup multiplier
 const GUTTER = {'1':195, split:245, '2':295, bigHome:50, bigHomeSf:3000};  // add-on, only with a cleanup
 const RANGE_UP = 1.10;                // show "from–to" as price → price×1.10
+const LEAD_ENDPOINT = '';             // Cloudflare Worker URL + '/lead' once deployed, e.g. 'https://cardinal-quote-leads.xxx.workers.dev/lead'
 const SERVICE_ZIPS = ['60409','60411','60417','60419','60422','60425','60426','60429','60430','60438','60443','60461','60462','60464','60466','60469','60471','60473','60475','60476','60478','60484','46307','46311','46319','46321','46322','46342','46356','46373','46375','46410','46311'];
 /* =============================================================== */
 
@@ -386,18 +390,37 @@ $('goManual').addEventListener('click', ()=>{
   setStatus('',''); $('status').hidden=true;
   show({lot:sf, bldg:null, stories:$('stories').value, src:'You entered', addr:[$('street').value,$('city').value].filter(Boolean).join(', '), zip:''});
 });
-$('book').addEventListener('submit', e=>{
+$('book').addEventListener('submit', async e=>{
   e.preventDefault();
-  const lines=[]; const sf=P.lot;
-  if(sel.mow) lines.push(['Weekly mowing', rangeTxt(price('mow',sf))+' / cut']);
-  if(sel.fert) lines.push(['5-step fertilizer', rangeTxt(price('fert',sf))+' / app']);
-  if(sel.aer) lines.push(['Aeration + overseeding', rangeTxt(price('aer',sf))]);
-  if(sel.spring) lines.push(['Spring cleanup', rangeTxt(price('spring',sf))]);
-  if(sel.fall) lines.push(['Fall cleanup ('+sel.fallVisits+' visit'+(sel.fallVisits>1?'s':'')+')', rangeTxt(fallPrice())]);
-  if((sel.spring||sel.fall)&&sel.gutter) lines.push(['Gutter cleaning', money(gutterPrice())]);
-  $('thanksBody').innerHTML = `<div class="hint">${$('name').value} · ${$('phone').value}${$('email').value?' · '+$('email').value:''}<br>${P.addr} · ${sf.toLocaleString()} sq ft</div>
-    <ul class="sum">${lines.map(l=>`<li><span>${l[0]}</span><span>${l[1]}</span></li>`).join('')||'<li><span>No services selected</span><span></span></li>'}</ul>
-    <p class="hint">Prototype: on the live site this creates a client and request in Jobber automatically.</p>`;
+  const sf=P.lot, lines=[];
+  if(sel.mow) lines.push({name:'Weekly mowing', price:rangeTxt(price('mow',sf))+' / cut'});
+  if(sel.fert) lines.push({name:'5-step fertilizer program', price:rangeTxt(price('fert',sf))+' / app'});
+  if(sel.aer) lines.push({name:'Aeration + overseeding', price:rangeTxt(price('aer',sf))});
+  if(sel.spring) lines.push({name:'Spring cleanup', price:rangeTxt(price('spring',sf))});
+  if(sel.fall) lines.push({name:'Fall cleanup ('+sel.fallVisits+' visit'+(sel.fallVisits>1?'s':'')+', '+({light:'few',avg:'some',heavy:'heavy'})[sel.tree]+' trees)', price:rangeTxt(fallPrice())});
+  if((sel.spring||sel.fall)&&sel.gutter) lines.push({name:'Gutter cleaning', price:money(gutterPrice())});
+  const total = $('total').textContent;
+  const homeTxt = $('pHome').textContent;
+  const payload = {
+    name:$('name').value.trim(), phone:$('phone').value.trim(), email:$('email').value.trim(), notes:$('notes').value.trim(), hp:$('website').value,
+    address:{street:$('street').value.trim(), city:$('city').value, state:$('state').value, zip:P.zip||''},
+    lot_sf:sf, lot_source:P.src, home: homeTxt!=='—'?homeTxt:'', services:lines, total: Number(total.replace(/[^0-9.]/g,''))||0, page:location.href
+  };
+  const btn=e.target.querySelector('button[type=submit]'); const err=$('bookErr'); err.hidden=true;
+  if(LEAD_ENDPOINT){
+    btn.disabled=true; btn.textContent='Sending…';
+    try{
+      const r=await fetch(LEAD_ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok||!d.ok) throw new Error(d.error||('Request failed ('+r.status+')'));
+    }catch(ex){
+      err.textContent="We couldn't send that just now ("+ex.message+"). Call or text us at the number below and we'll get you on the schedule.";
+      err.hidden=false; btn.disabled=false; btn.textContent='Request service'; return;
+    }
+  }
+  $('thanksBody').innerHTML = `<div class="hint">${payload.name} · ${payload.phone}${payload.email?' · '+payload.email:''}<br>${P.addr} · ${sf.toLocaleString()} sq ft</div>
+    <ul class="sum">${lines.map(l=>`<li><span>${l.name}</span><span>${l.price}</span></li>`).join('')||'<li><span>No services selected</span><span></span></li>'}</ul>
+    <p class="hint">${LEAD_ENDPOINT?'Your request is in our system. We\'ll confirm within one business day.':'Prototype: on the live site this creates a client and request in Jobber automatically.'}</p>`;
   $('book').hidden=true; $('thanks').hidden=false;
 });
 
