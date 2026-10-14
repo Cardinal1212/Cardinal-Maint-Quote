@@ -36,6 +36,11 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);ou
 .row{display:grid;grid-template-columns:1fr;gap:10px}
 @media(min-width:520px){.row.c3{grid-template-columns:2fr 1fr 1fr}.row.c2{grid-template-columns:1fr 1fr}}
 .row>div{min-width:0}
+.ac{position:relative}
+#sugg{position:absolute;left:0;right:0;top:100%;z-index:5;margin:4px 0 0;padding:4px;list-style:none;background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:260px;overflow-y:auto}
+#sugg li{padding:9px 10px;border-radius:6px;cursor:pointer;font-size:15px;line-height:1.3}
+#sugg li small{display:block;color:var(--muted);font-size:12px}
+#sugg li[aria-selected=true],#sugg li:hover{background:var(--soft)}
 .btn{font:inherit;font-weight:600;font-size:16px;padding:12px 18px;border-radius:8px;border:1px solid transparent;cursor:pointer;background:var(--accent);color:var(--accent-fg)}
 .btn.sec{background:transparent;color:var(--fg);border-color:var(--line)}
 .btn:disabled{opacity:.6;cursor:wait}
@@ -87,7 +92,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   <p class="step">Step 1</p>
   <h2>Where's the lawn?</h2>
   <div class="row c3">
-    <div><label for="street">Street address</label><input type="text" id="street" placeholder="1344 Jill Terrace" autocomplete="street-address"></div>
+    <div class="ac"><label for="street">Street address</label><input type="text" id="street" placeholder="Start typing: 1344 Jill Ter…" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sugg"><ul id="sugg" role="listbox" hidden></ul></div>
     <div><label for="city">City</label><input type="text" id="city" placeholder="Homewood" autocomplete="address-level2"></div>
     <div><label for="state">State</label><select id="state"><option value="IL">Illinois</option><option value="IN">Indiana</option></select></div>
   </div>
@@ -296,7 +301,48 @@ $('svc').addEventListener('click', e=>{
 
 /* ---------- inputs ---------- */
 $('go').addEventListener('click', lookup);
-$('street').addEventListener('keydown', e=>{ if(e.key==='Enter') lookup(); });
+/* ---------- address suggestions (Photon / OpenStreetMap, no key) ---------- */
+const AC_BIAS = {lat:41.56, lon:-87.62};   // Lynwood — biases suggestions to the south suburbs / NW Indiana
+let acTimer=null, acCtl=null, acItems=[], acIdx=-1;
+const streetEl=$('street'), suggEl=$('sugg');
+function acClose(){ suggEl.hidden=true; suggEl.innerHTML=''; acItems=[]; acIdx=-1; streetEl.setAttribute('aria-expanded','false'); }
+function acLabel(p){ return [p.house, p.street].filter(Boolean).join(' '); }
+async function acSearch(q){
+  if(acCtl) acCtl.abort(); acCtl=new AbortController();
+  const url='https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&lat='+AC_BIAS.lat+'&lon='+AC_BIAS.lon+'&limit=8&lang=en';
+  let d; try{ const r=await fetch(url,{signal:acCtl.signal}); d=await r.json(); }catch(e){ return; }
+  const seen=new Set();
+  acItems=(d.features||[]).map(f=>{const p=f.properties||{}; return {
+      house:p.housenumber||'', street:p.street||(p.type==='street'?p.name:'')||'', city:p.city||p.town||p.village||p.locality||p.district||'',
+      state:p.state||'', zip:p.postcode||'', cc:p.countrycode||'' };})
+    .filter(p=>p.cc==='US' && p.house && p.street && /^(Illinois|Indiana)$/.test(p.state))
+    .filter(p=>{ const k=(acLabel(p)+p.city).toUpperCase(); if(seen.has(k)) return false; seen.add(k); return true; })
+    .slice(0,6);
+  if(!acItems.length){ acClose(); return; }
+  suggEl.innerHTML = acItems.map((p,i)=>`<li role="option" data-i="${i}" aria-selected="false">${acLabel(p)}<small>${p.city}, ${p.state==='Illinois'?'IL':'IN'} ${p.zip}</small></li>`).join('');
+  suggEl.hidden=false; acIdx=-1; streetEl.setAttribute('aria-expanded','true');
+}
+function acPick(i){
+  const p=acItems[i]; if(!p) return;
+  streetEl.value=acLabel(p); $('city').value=p.city; $('state').value = p.state==='Indiana'?'IN':'IL';
+  acClose(); lookup();
+}
+streetEl.addEventListener('input', ()=>{
+  clearTimeout(acTimer); const q=streetEl.value.trim();
+  if(q.length<4 || !/^\d/.test(q)){ acClose(); return; }
+  acTimer=setTimeout(()=>acSearch(q), 250);
+});
+streetEl.addEventListener('keydown', e=>{
+  if(!suggEl.hidden && acItems.length){
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); acIdx=(acIdx+(e.key==='ArrowDown'?1:-1)+acItems.length)%acItems.length;
+      [...suggEl.children].forEach((li,i)=>li.setAttribute('aria-selected', i===acIdx)); return; }
+    if(e.key==='Enter'){ e.preventDefault(); acPick(acIdx>=0?acIdx:0); return; }
+    if(e.key==='Escape'){ acClose(); return; }
+  }
+  if(e.key==='Enter') lookup();
+});
+suggEl.addEventListener('mousedown', e=>{ const li=e.target.closest('li'); if(li){ e.preventDefault(); acPick(+li.dataset.i); } });
+document.addEventListener('click', e=>{ if(!e.target.closest('.ac')) acClose(); });
 $('city').addEventListener('keydown', e=>{ if(e.key==='Enter') lookup(); });
 $('manualBtn').addEventListener('click', ()=>{ $('manual').hidden=!$('manual').hidden; });
 $('goManual').addEventListener('click', ()=>{
