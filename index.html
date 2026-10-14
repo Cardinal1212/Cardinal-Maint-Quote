@@ -26,24 +26,36 @@
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
 .band{background:var(--band);color:var(--band-fg);border-bottom:4px solid var(--accent)}
-.logo{display:block;width:160px;height:auto;margin-bottom:4px}
+.logo{display:block;width:120px;height:auto}
 @media(min-width:600px){.logo{width:260px}}
 .topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:nowrap;min-width:0}
-.phone{font-family:var(--display);font-weight:700;font-size:20px;color:var(--blue);text-decoration:none;white-space:nowrap}
+.phone{font-family:var(--display);font-weight:700;font-size:18px;color:var(--blue);text-decoration:none;white-space:nowrap}
 .phone small{display:block;font-family:var(--body);font-weight:500;font-size:12px;color:var(--band-muted);letter-spacing:.06em;text-transform:uppercase}
-.reviews{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.reviews{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.search{display:flex;gap:8px;align-items:stretch}
+.search .ac{flex:1 1 auto;min-width:0}
+.search input{height:46px;font-size:16px}
+.search .btn{white-space:nowrap;padding:0 16px}
+.links{margin:8px 0 0;font-size:13px;color:var(--band-muted)}
+.links a{color:var(--blue);font-weight:600;text-decoration:none}
+.manual{margin-top:10px;padding:12px;border-radius:8px;background:var(--soft)}
+.propbar{padding:2px 2px 0}
+.propline{font-size:15px;color:var(--muted)}
+.propline b{font-family:var(--display);font-size:22px;color:var(--fg);font-variant-numeric:tabular-nums}
+.propline .dot{margin:0 4px}
+.propaddr{font-size:13px;color:var(--muted)}
 .rev{flex:1 1 220px;min-width:0;font-size:14px;color:var(--band-fg);background:var(--soft);border-radius:8px;padding:10px 12px}
 .rev b{display:block;color:var(--blue);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
-.trust{font-size:14px;color:var(--band-muted)}
+.trust{font-size:13px;color:var(--band-muted)}
 .trust{color:var(--accent)}
 .trust span{color:var(--band-fg);font-weight:600;margin-left:6px}
 .trust .t2{color:var(--band-muted);font-weight:500}
-.band .in{max-width:680px;margin:0 auto;padding-block:16px 16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:4px}
+.band .in{max-width:680px;margin:0 auto;padding-block:14px 14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:4px}
 .brand{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray)}
-h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,7vw,46px);line-height:1;margin:0;text-wrap:balance}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,6vw,40px);line-height:1;margin:8px 0 10px;text-wrap:balance}
 .band p{margin:4px 0 0;color:var(--band-muted);max-width:52ch}
-.wrap{max-width:680px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+.wrap{max-width:680px;margin:0 auto;padding-block:12px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
 .step{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin:0 0 6px}
 h2{font-family:var(--display);font-weight:700;font-size:26px;line-height:1.05;margin:0 0 12px;text-wrap:balance}
 label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
@@ -69,12 +81,12 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);ou
 .prop b{display:block;font-family:var(--display);font-size:26px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
 .prop span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 .svc{display:flex;flex-direction:column;gap:0}
-.item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:14px 0;border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;padding:11px 0;border-top:1px solid var(--line)}
 .item:first-child{border-top:0;padding-top:4px}
 .item input[type=checkbox]{width:20px;height:20px;margin-top:3px;accent-color:var(--accent)}
 .item .name{font-weight:600}
-.item .sub{font-size:13px;color:var(--muted);margin-top:2px}
-.item .price{font-family:var(--display);font-weight:700;font-size:24px;line-height:1;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.item .sub{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.35}
+.item .price{font-family:var(--display);font-weight:700;font-size:21px;line-height:1;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 .item .price small{display:block;font-family:var(--body);font-weight:400;font-size:12px;color:var(--muted);margin-top:3px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .chip{font:inherit;font-size:13px;font-weight:500;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
@@ -101,60 +113,43 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
     <img class="logo" src="logo.png" alt="Cardinal Landscaping, Maintenance &amp; Snow Removal">
     <a class="phone" id="phoneLink" href="#" hidden><small>Call or text</small><span id="phoneTxt"></span></a>
   </div>
-  <div class="brand">Instant lawn pricing <span id="officeBadge" hidden style="margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--accent);color:#fff;font-size:11px;letter-spacing:.06em">OFFICE MODE · exact prices</span></div>
-  <h1>Your lawn price in 10 seconds.</h1>
-  <p>Type your address. We pull the lot size from county records and price mowing, fertilizing, aeration and cleanups on the spot.</p>
+  <h1>Your lawn price in 10 seconds. <span id="officeBadge" hidden style="vertical-align:middle;padding:2px 8px;border-radius:999px;background:var(--accent);color:#fff;font-size:11px;letter-spacing:.06em;font-family:var(--body)">OFFICE MODE · exact prices</span></h1>
+  <div class="search">
+    <div class="ac"><input type="text" id="street" placeholder="Type your street address" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sugg" aria-label="Street address"><ul id="sugg" role="listbox" hidden></ul></div>
+    <button class="btn" id="go">See my price</button>
+  </div>
+  <p class="links"><a href="#" id="manualBtn">Know your lot size?</a> · <a href="#" id="commLink">Commercial property?</a> · South suburbs &amp; NW Indiana</p>
+  <input type="hidden" id="city" value=""><input type="hidden" id="state" value="IL">
+  <div id="manual" hidden class="manual">
+    <div class="row c2">
+      <div><label for="lotsf">Lot size (sq ft)</label><input type="number" id="lotsf" placeholder="7500" min="1000" step="100"></div>
+      <div><label for="stories">Home</label><select id="stories"><option value="1">1 story</option><option value="split">Split level</option><option value="2">2 story</option></select></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap"><button class="btn" id="goManual" type="button">Price it</button><span class="hint" style="margin:0">A typical lot here is 6,000–8,000 sq ft. A quarter acre is 10,900.</span></div>
+  </div>
+  <div id="status" class="notice" hidden></div>
   <div class="reviews" id="reviews" hidden></div>
 </div></div>
 
 <div class="wrap">
 
-<section class="card" id="s1">
-  <p class="step">Step 1</p>
-  <h2>Where's the lawn?</h2>
-  <div class="ac"><label for="street">Street address</label><input type="text" id="street" placeholder="Start typing: 1344 Jill Ter…" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sugg"><ul id="sugg" role="listbox" hidden></ul></div>
-  <p class="hint">Illinois south suburbs and Northwest Indiana. Pick your address from the list as it appears.</p>
-  <p class="hint">Commercial property (HOA, retail, office, multi-unit)? <a href="#" id="commLink" style="color:var(--accent);font-weight:600">Request commercial pricing</a> — we price those with a site visit.</p>
-  <input type="hidden" id="city" value=""><input type="hidden" id="state" value="IL">
-  <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-    <button class="btn" id="go">See my price</button>
-    <button class="btn sec" id="manualBtn" type="button">I know my lot size</button>
-  </div>
-  <div id="manual" hidden style="margin-top:12px">
-    <div class="row c2">
-      <div><label for="lotsf">Lot size (sq ft)</label><input type="number" id="lotsf" placeholder="7500" min="1000" step="100"></div>
-      <div><label for="stories">Home</label><select id="stories"><option value="1">1 story</option><option value="split">Split level</option><option value="2">2 story</option></select></div>
-    </div>
-    <p class="hint">Tip: a typical south-suburb lot is 6,000–8,000 sq ft. A quarter acre is 10,900.</p>
-    <button class="btn" id="goManual" type="button" style="margin-top:10px">Price it</button>
-  </div>
-  <div id="status" class="notice" hidden></div>
-</section>
+<section id="s1" hidden></section>
 
-<section class="card" id="s2" hidden>
-  <p class="step">Step 2</p>
-  <h2>Your property</h2>
-  <div class="prop">
-    <div><b id="pLot">—</b><span>Lot sq ft</span></div>
-    <div><b id="pAcre">—</b><span>Acres</span></div>
-    <div><b id="pHome">—</b><span>Home</span></div>
-    <div><b id="pSrc">—</b><span>Source</span></div>
-  </div>
-  <p class="hint" id="pAddr"></p>
+<section class="propbar" id="s2" hidden>
+  <div class="propline"><b id="pLot">—</b> sq ft <span class="dot">·</span> <b id="pAcre">—</b> ac <span class="dot">·</span> <span id="pHome">—</span><span id="pSrc" hidden></span></div>
+  <div class="propaddr" id="pAddr"></div>
   <div id="area" class="notice warn" hidden>This address is just outside our current maintenance area. Leave your info below and we'll let you know if we can fit you in.</div>
 </section>
 
 <section class="card" id="s3" hidden>
-  <p class="step">Step 3</p>
-  <h2>Pick your services</h2>
+  <p class="step" style="margin-bottom:2px">Pick your services</p>
   <div class="svc" id="svc"></div>
   <div class="total"><span>Selected today</span><b id="total">$0</b></div>
   <p class="fine">Estimates are based on county lot size. Final price is confirmed on the first visit. First mow may be higher if the lawn is overgrown.</p>
 </section>
 
 <section class="card" id="s4" hidden>
-  <p class="step">Step 4</p>
-  <h2 id="s4h">Lock it in</h2>
+  <h2 id="s4h" style="font-size:22px">Lock it in</h2>
   <p class="hint" id="s4sub" hidden style="margin:-6px 0 12px">No pricing yet for this area. We'll reach out if we can service it.</p>
   <form id="book" style="position:relative">
     <div id="commFields" hidden style="margin-bottom:10px"><label for="company">Company / property name</label><input type="text" id="company" autocomplete="organization"><div style="margin-top:10px"><label for="commAddr">Property address</label><input type="text" id="commAddr" autocomplete="street-address" placeholder="Street, City"></div></div>
@@ -177,7 +172,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v12</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v13</span></p>
 </div>
 
 <script>
@@ -284,7 +279,7 @@ function show(res){
   P = res; sel.stories = res.stories || sel.stories;
   $('pLot').textContent = res.lot.toLocaleString();
   $('pAcre').textContent = (res.lot/43560).toFixed(2);
-  $('pHome').textContent = res.stories ? ({'1':'1 story',split:'Split',2:'2 story'})[res.stories] + (res.bldg? ' · '+res.bldg.toLocaleString()+' sf':'') : 'Not on file';
+  $('pHome').textContent = res.stories ? ({'1':'1-story',split:'Split-level',2:'2-story'})[res.stories] + ' home' + (res.bldg? ', '+res.bldg.toLocaleString()+' sf':'') : 'Home size not on file';
   $('pSrc').textContent = res.src;
   $('pAddr').textContent = res.addr || '';
   P.inArea = !res.zip || SERVICE_ZIPS.includes(res.zip) || OFFICE;
@@ -294,6 +289,7 @@ function show(res){
   $('s4sub').hidden = P.inArea;
   renderServices();
   if(booted) $('s2').scrollIntoView({behavior:'smooth',block:'start'});
+  $('manual').hidden=true;
 }
 
 function fallPrice(){ let p = price('fall', P.lot) * TREE[sel.tree]; if(sel.fallVisits===2) p*=FALL_2VISIT; return r5(p); }
@@ -432,7 +428,7 @@ streetEl.addEventListener('keydown', e=>{
 suggEl.addEventListener('mousedown', e=>{ const li=e.target.closest('li'); if(li){ e.preventDefault(); acPick(+li.dataset.i); } });
 document.addEventListener('click', e=>{ if(!e.target.closest('.ac')) acClose(); });
 $('city').addEventListener('keydown', e=>{ if(e.key==='Enter') lookup(); });
-$('manualBtn').addEventListener('click', ()=>{ $('manual').hidden=!$('manual').hidden; });
+$('manualBtn').addEventListener('click', e=>{ e.preventDefault(); $('manual').hidden=!$('manual').hidden; if(!$('manual').hidden) $('lotsf').focus(); });
 $('goManual').addEventListener('click', ()=>{
   const sf=+$('lotsf').value; if(!sf||sf<1000){ setStatus('Enter a lot size of at least 1,000 sq ft.','err'); return; }
   setStatus('',''); $('status').hidden=true;
