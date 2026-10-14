@@ -127,6 +127,10 @@ async function ensureClientAndProperty(env, lead) {
 
 /* ---------- request ---------- */
 function buildDetails(lead, addr, returning) {
+  const flag = lead.landscape_interest ? '*** LANDSCAPE INTEREST — call about design/build (patio, drainage, planting) ***\n\n' : '';
+  return flag + buildDetailsBody(lead, addr, returning);
+}
+function buildDetailsBody(lead, addr, returning) {
   const lines = (lead.services || []).map(s => `• ${s.name}: ${s.price}`).join('\n');
   if (lead.commercial) return `INSTANT QUOTE SITE — COMMERCIAL LEAD${returning ? ' (existing client)' : ''}\n` +
     `Company/property: ${lead.company || '(not given)'}\nAddress: ${addr.street1}, ${addr.city}\nPriced after site visit.\n` +
@@ -194,7 +198,7 @@ async function createLead(env, lead) {
   const rr = await gql(env, `
     mutation ($input: RequestCreateInput!) {
       requestCreate(input: $input) { request { id } userErrors { message path } }
-    }`, { input: { clientId: ids.clientId, ...(ids.propertyId ? { propertyId: ids.propertyId } : {}), title: lead.commercial ? 'Instant Quote Site — Commercial' : (lead.in_area === false ? 'Instant Quote Site — Out of area' : 'Instant Quote Site') } });
+    }`, { input: { clientId: ids.clientId, ...(ids.propertyId ? { propertyId: ids.propertyId } : {}), title: (lead.commercial ? 'Instant Quote Site — Commercial' : (lead.in_area === false ? 'Instant Quote Site — Out of area' : 'Instant Quote Site')) + (lead.landscape_interest ? ' + Landscaping' : '') } });
   ue(rr.requestCreate, 'requestCreate');
   const requestId = rr.requestCreate.request.id;
 
