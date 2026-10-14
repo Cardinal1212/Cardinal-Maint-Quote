@@ -152,7 +152,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana</p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v3</span></p>
 </div>
 
 <script>
@@ -328,10 +328,17 @@ async function acSearch(q){
   if(acCtl) acCtl.abort(); acCtl=new AbortController(); const sig=acCtl.signal;
   const Q=q.toUpperCase().replace(/\s+/g,' ');
   const jobs = $('state').value==='IN' ? [sugIndiana(Q,sig)] : [sugCook(Q,sig), sugWill(Q,sig)];
+  setStatus('Searching county records…');
   const res = await Promise.allSettled(jobs);
   if(sig.aborted) return;
   acItems = res.flatMap(r=>r.status==='fulfilled'?r.value:[]).slice(0,8);
-  if(!acItems.length){ acClose(); return; }
+  if(!acItems.length){
+    acClose();
+    const errs = res.filter(r=>r.status==='rejected').map(r=>String(r.reason && r.reason.message || r.reason));
+    setStatus(errs.length===res.length ? 'County lookup failed: '+errs.join(' | ') : 'No matching addresses yet. Keep typing, or check the house number.', errs.length===res.length?'err':'');
+    return;
+  }
+  setStatus(''); $('status').hidden=true;
   suggEl.innerHTML = acItems.map((p,i)=>`<li role="option" data-i="${i}" aria-selected="false">${p.street}<small>${p.city}, ${p.st}${p.zip?' '+p.zip:''}</small></li>`).join('');
   suggEl.hidden=false; acIdx=-1; streetEl.setAttribute('aria-expanded','true');
 }
