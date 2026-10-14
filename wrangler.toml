@@ -7,4 +7,6 @@ keep_vars = true
 [vars]
 ALLOWED_ORIGINS = "https://cardinal1212.github.io,https://quote.cardinallm.net"
 JOBBER_API_VERSION = "2025-04-16"
+QUOTE_MODE = "draft"
+DEPOSIT = "first_mow"
 # Secrets (Cloudflare → Worker → Settings → Variables and Secrets): JOBBER_CLIENT_ID, JOBBER_CLIENT_SECRET, JOBBER_REFRESH_TOKEN

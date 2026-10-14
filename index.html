@@ -81,7 +81,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
 
 
 <div class="band"><div class="in">
-  <div class="brand">Cardinal Landscape Associates</div>
+  <div class="brand">Cardinal Landscape Associates <span id="officeBadge" hidden style="margin-left:8px;padding:2px 8px;border-radius:999px;background:#f3b4ae;color:#17201b;font-size:11px;letter-spacing:.06em">OFFICE MODE · exact prices</span></div>
   <h1>Your lawn price in 10 seconds.</h1>
   <p>Type your address. We pull the lot size from county records and price mowing, fertilizing, aeration and cleanups on the spot.</p>
 </div></div>
@@ -119,7 +119,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
     <div><b id="pSrc">—</b><span>Source</span></div>
   </div>
   <p class="hint" id="pAddr"></p>
-  <div id="area" class="notice warn" hidden>This address is outside our usual service area. We'll confirm availability before scheduling.</div>
+  <div id="area" class="notice warn" hidden>This address is just outside our current maintenance area. Leave your info below and we'll let you know if we can fit you in.</div>
 </section>
 
 <section class="card" id="s3" hidden>
@@ -132,7 +132,8 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
 
 <section class="card" id="s4" hidden>
   <p class="step">Step 4</p>
-  <h2>Lock it in</h2>
+  <h2 id="s4h">Lock it in</h2>
+  <p class="hint" id="s4sub" hidden style="margin:-6px 0 12px">No pricing yet for this area. We'll reach out if we can service it.</p>
   <form id="book" style="position:relative">
     <div class="row c2">
       <div><label for="name">Name</label><input type="text" id="name" required autocomplete="name"></div>
@@ -153,7 +154,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v6</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v7</span></p>
 </div>
 
 <script>
@@ -181,6 +182,10 @@ const money = n => '$'+Math.round(n).toLocaleString();
 const $ = id => document.getElementById(id);
 
 let booted = false;
+const OFFICE = /[?&]office=1/.test(location.search);           // ?office=1 → exact prices, no form
+const MONTH = new Date().getMonth()+1;
+const FALL_SEASON = MONTH>=8 || MONTH<=1;                      // Aug–Jan: fall services first
+const exactOrRange = p => OFFICE ? money(p) : rangeTxt(p);
 let P = {lot:0, stories:null, bldg:null, src:'', addr:'', zip:''};
 let sel = {mow:true, fert:false, aer:false, spring:false, fall:false, fallVisits:1, tree:'avg', gutter:false, stories:'1'};
 
@@ -245,8 +250,11 @@ function show(res){
   $('pHome').textContent = res.stories ? ({'1':'1 story',split:'Split',2:'2 story'})[res.stories] + (res.bldg? ' · '+res.bldg.toLocaleString()+' sf':'') : 'Not on file';
   $('pSrc').textContent = res.src;
   $('pAddr').textContent = res.addr || '';
-  $('area').hidden = !res.zip || SERVICE_ZIPS.includes(res.zip);
-  $('s2').hidden=false; $('s3').hidden=false; $('s4').hidden=false;
+  P.inArea = !res.zip || SERVICE_ZIPS.includes(res.zip) || OFFICE;
+  $('area').hidden = P.inArea;
+  $('s2').hidden=false; $('s3').hidden=!P.inArea; $('s4').hidden=OFFICE;
+  $('s4h').textContent = P.inArea ? 'Lock it in' : 'Leave your info';
+  $('s4sub').hidden = P.inArea;
   renderServices();
   if(booted) $('s2').scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -269,13 +277,15 @@ function renderServices(){
   const gutter = cleanupOn ? `<div class="addon"><input type="checkbox" id="chk_gutter" ${sel.gutter?'checked':''} aria-label="Gutter cleaning">
       <div><div class="name">Add gutter cleaning while we're there</div><div class="sub">Only offered with a cleanup. We blow the gutters first, then the lawn and beds.</div>${gutterExtra}</div>
       <div class="price">${money(gutterPrice())}<small>add-on</small></div></div>` : '';
-  $('svc').innerHTML =
-    item('mow', RATES.mow.label, RATES.mow.sub, `${rangeTxt(price('mow',sf))}<small>${RATES.mow.unit}</small>`) +
-    item('fert', RATES.fert.label, RATES.fert.sub, `${rangeTxt(price('fert',sf))}<small>${RATES.fert.unit} · ${money(price('fert',sf)*5)} season</small>`) +
-    item('aer', RATES.aer.label, RATES.aer.sub, `${rangeTxt(price('aer',sf))}<small>${RATES.aer.unit}</small>`) +
-    item('spring', RATES.spring.label, RATES.spring.sub, `${rangeTxt(price('spring',sf))}<small>${RATES.spring.unit}</small>`) +
-    item('fall', RATES.fall.label, RATES.fall.sub, `${rangeTxt(fallPrice())}<small>${sel.fallVisits===2?'two visits':'one visit'}</small>`, treeChips) +
-    gutter;
+  const rows = {
+    mow:    item('mow', RATES.mow.label, RATES.mow.sub, `${exactOrRange(price('mow',sf))}<small>${RATES.mow.unit}</small>`),
+    fert:   item('fert', RATES.fert.label, RATES.fert.sub, `${exactOrRange(price('fert',sf))}<small>${RATES.fert.unit} · ${money(price('fert',sf)*5)} season</small>`),
+    aer:    item('aer', RATES.aer.label, RATES.aer.sub, `${exactOrRange(price('aer',sf))}<small>${RATES.aer.unit}</small>`),
+    spring: item('spring', RATES.spring.label, RATES.spring.sub, `${exactOrRange(price('spring',sf))}<small>${RATES.spring.unit}</small>`),
+    fall:   item('fall', RATES.fall.label, RATES.fall.sub, `${exactOrRange(fallPrice())}<small>${sel.fallVisits===2?'two visits':'one visit'}</small>`, treeChips),
+  };
+  const order = FALL_SEASON ? ['fall','aer','mow','fert','spring'] : ['mow','fert','spring','aer','fall'];
+  $('svc').innerHTML = order.map(k=>rows[k]).join('') + gutter;
   renderTotal();
 }
 function renderTotal(){
@@ -404,7 +414,10 @@ $('book').addEventListener('submit', async e=>{
   const payload = {
     name:$('name').value.trim(), phone:$('phone').value.trim(), email:$('email').value.trim(), notes:$('notes').value.trim(), hp:$('website').value,
     address:{street:$('street').value.trim(), city:$('city').value, state:$('state').value, zip:P.zip||''},
-    lot_sf:sf, lot_source:P.src, home: homeTxt!=='—'?homeTxt:'', services:lines, total: Number(total.replace(/[^0-9.]/g,''))||0, page:location.href
+    lot_sf:sf, lot_source:P.src, home: homeTxt!=='—'?homeTxt:'', services:lines, total: Number(total.replace(/[^0-9.]/g,''))||0, page:location.href,
+    in_area: P.inArea!==false,
+    selected:{mow:!!sel.mow, fert:!!sel.fert, aer:!!sel.aer, spring:!!sel.spring, fall:!!sel.fall, gutter:!!((sel.spring||sel.fall)&&sel.gutter)},
+    quote: P.inArea===false ? {} : {mow:price('mow',sf), fert:price('fert',sf), aer:price('aer',sf), spring:price('spring',sf), fall:fallPrice(), fallVisits:sel.fallVisits, gutter:gutterPrice(), stories:sel.stories, tree:sel.tree}
   };
   const btn=e.target.querySelector('button[type=submit]'); const err=$('bookErr'); err.hidden=true;
   if(LEAD_ENDPOINT){
@@ -413,6 +426,7 @@ $('book').addEventListener('submit', async e=>{
       const r=await fetch(LEAD_ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
       const d=await r.json().catch(()=>({}));
       if(!r.ok||!d.ok) throw new Error(d.error||('Request failed ('+r.status+')'));
+      window.__lead=d;
     }catch(ex){
       err.textContent="We couldn't send that just now ("+ex.message+"). Call or text us at the number below and we'll get you on the schedule.";
       err.hidden=false; btn.disabled=false; btn.textContent='Request service'; return;
@@ -420,12 +434,13 @@ $('book').addEventListener('submit', async e=>{
   }
   $('thanksBody').innerHTML = `<div class="hint">${payload.name} · ${payload.phone}${payload.email?' · '+payload.email:''}<br>${P.addr} · ${sf.toLocaleString()} sq ft</div>
     <ul class="sum">${lines.map(l=>`<li><span>${l.name}</span><span>${l.price}</span></li>`).join('')||'<li><span>No services selected</span><span></span></li>'}</ul>
-    <p class="hint">${LEAD_ENDPOINT?'Your request is in our system. We\'ll confirm within one business day.':'Prototype: on the live site this creates a client and request in Jobber automatically.'}</p>`;
+    <p class="hint">${LEAD_ENDPOINT ? (P.inArea===false ? 'Got it. We\'ll reach out if we can service your area.' : 'Your quote is being prepared — watch for a text and email from Cardinal with a link to approve it and put a card on file. No charge until we mow.') : 'Prototype: on the live site this creates a client and request in Jobber automatically.'}</p>`;
   $('book').hidden=true; $('thanks').hidden=false;
 });
 
 /* Opens in a working state so the flow is visible before any lookup. */
 booted = false;
+if(OFFICE) $('officeBadge').hidden=false;
 show({lot:7500, bldg:1205, stories:'1', src:'Example', addr:'Example: 2911 194th St, Lansing (replace with a real address above)', zip:'60438'});
 booted = true;
 </script>
