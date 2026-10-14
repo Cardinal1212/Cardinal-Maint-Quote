@@ -113,6 +113,7 @@ async function ensureClientAndProperty(env, lead) {
     }`, {
     input: {
       firstName, lastName,
+      ...(lead.commercial && lead.company ? { companyName: String(lead.company).slice(0, 120), isCompany: true } : {}),
       emails: lead.email ? [{ address: lead.email, description: 'MAIN', primary: true }] : [],
       phones: lead.phone ? [{ number: lead.phone, description: 'MOBILE', primary: true }] : [],
       billingAddress: addr,
@@ -127,7 +128,10 @@ async function ensureClientAndProperty(env, lead) {
 /* ---------- request ---------- */
 function buildDetails(lead, addr, returning) {
   const lines = (lead.services || []).map(s => `• ${s.name}: ${s.price}`).join('\n');
-  return `INSTANT QUOTE SITE LEAD${returning ? ' (existing client)' : ''}\n` +
+  if (lead.commercial) return `INSTANT QUOTE SITE — COMMERCIAL LEAD${returning ? ' (existing client)' : ''}\n` +
+    `Company/property: ${lead.company || '(not given)'}\nAddress: ${addr.street1}, ${addr.city}\nPriced after site visit.\n` +
+    (lead.notes ? `\nCustomer notes: ${lead.notes}\n` : '') + `\nSubmitted ${new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' })}`;
+  return `INSTANT QUOTE SITE LEAD${returning ? ' (existing client)' : ''}${lead.in_area === false ? ' — OUTSIDE SERVICE AREA' : ''}\n` +
     `Address: ${addr.street1}, ${addr.city}, ${addr.province} ${addr.postalCode}\n` +
     `Lot: ${Number(lead.lot_sf || 0).toLocaleString('en-US')} sq ft (${lead.lot_source || 'customer entered'})` + (lead.home ? ` · Home: ${lead.home}` : '') + `\n\n` +
     `Services selected:\n${lines || '(none)'}\n` + (lead.total ? `Selected today: ${money(lead.total)}\n` : '') +
@@ -190,12 +194,12 @@ async function createLead(env, lead) {
   const rr = await gql(env, `
     mutation ($input: RequestCreateInput!) {
       requestCreate(input: $input) { request { id } userErrors { message path } }
-    }`, { input: { clientId: ids.clientId, ...(ids.propertyId ? { propertyId: ids.propertyId } : {}), title: 'Instant Quote Site' } });
+    }`, { input: { clientId: ids.clientId, ...(ids.propertyId ? { propertyId: ids.propertyId } : {}), title: lead.commercial ? 'Instant Quote Site — Commercial' : (lead.in_area === false ? 'Instant Quote Site — Out of area' : 'Instant Quote Site') } });
   ue(rr.requestCreate, 'requestCreate');
   const requestId = rr.requestCreate.request.id;
 
   let quote = null, quoteError = null;
-  if ((env.QUOTE_MODE || 'draft') !== 'off') {
+  if ((env.QUOTE_MODE || 'draft') !== 'off' && !lead.commercial && lead.in_area !== false) {
     try { quote = await createQuote(env, lead, ids, requestId); } catch (e) { quoteError = e.message; console.error('quote failed', e.message); }
   }
 
