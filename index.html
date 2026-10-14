@@ -187,7 +187,7 @@ const SOC = 'https://datacatalog.cookcountyil.gov/resource/';
 function parseStreet(s){
   const m = s.trim().match(/^(\d+)\s+([A-Za-z0-9]+)/); return m ? {num:m[1], word:m[2].toUpperCase()} : null;
 }
-async function jget(url){ const r = await fetch(url); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+async function jget(url, signal){ const r = await fetch(url, signal?{signal}:undefined); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
 
 async function lookupCook(num, word, city){
   const rows = await jget(SOC+'3723-97qp.json?year=2025&$limit=25&$q='+encodeURIComponent(num+' '+word));
@@ -301,37 +301,68 @@ $('svc').addEventListener('click', e=>{
 
 /* ---------- inputs ---------- */
 $('go').addEventListener('click', lookup);
-/* ---------- address suggestions (Photon / OpenStreetMap, no key) ---------- */
-const AC_BIAS = {lat:41.56, lon:-87.62};   // Lynwood — biases suggestions to the south suburbs / NW Indiana
+/* ---------- address suggestions straight from county parcel records ---------- */
 let acTimer=null, acCtl=null, acItems=[], acIdx=-1;
 const streetEl=$('street'), suggEl=$('sugg');
+const titleCase = s => (s||'').toLowerCase().replace(/\b([a-z])/g, m=>m.toUpperCase()).replace(/\b(\d+)(St|Nd|Rd|Th)\b/g,(m,n,x)=>n+x.toLowerCase());
 function acClose(){ suggEl.hidden=true; suggEl.innerHTML=''; acItems=[]; acIdx=-1; streetEl.setAttribute('aria-expanded','false'); }
-function acLabel(p){ return [p.house, p.street].filter(Boolean).join(' '); }
-async function acSearch(q){
-  if(acCtl) acCtl.abort(); acCtl=new AbortController();
-  const url='https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&lat='+AC_BIAS.lat+'&lon='+AC_BIAS.lon+'&limit=8&lang=en';
-  let d; try{ const r=await fetch(url,{signal:acCtl.signal}); d=await r.json(); }catch(e){ return; }
+async function sugCook(q, sig){
+  const w = `starts_with(prop_address_full,'${q.replace(/'/g,"''")}') AND year=2025`;
+  const rows = await jget(SOC+'3723-97qp.json?$limit=6&$select=pin,prop_address_full,prop_address_city_name,prop_address_zipcode_1&$where='+encodeURIComponent(w), sig);
   const seen=new Set();
-  acItems=(d.features||[]).map(f=>{const p=f.properties||{}; return {
-      house:p.housenumber||'', street:p.street||(p.type==='street'?p.name:'')||'', city:p.city||p.town||p.village||p.locality||p.district||'',
-      state:p.state||'', zip:p.postcode||'', cc:p.countrycode||'' };})
-    .filter(p=>p.cc==='US' && p.house && p.street && /^(Illinois|Indiana)$/.test(p.state))
-    .filter(p=>{ const k=(acLabel(p)+p.city).toUpperCase(); if(seen.has(k)) return false; seen.add(k); return true; })
-    .slice(0,6);
+  return rows.filter(r=>{const k=r.prop_address_full+r.prop_address_city_name; if(seen.has(k))return false; seen.add(k); return true;})
+    .map(r=>({src:'cook', street:titleCase(r.prop_address_full), city:titleCase(r.prop_address_city_name), st:'IL', zip:r.prop_address_zipcode_1||'', pin:r.pin}));
+}
+async function sugWill(q, sig){
+  const d = await jget('https://gis.willcountyillinois.com/hosting/rest/services/Locators/WillCountyLocator_AddPts/GeocodeServer/suggest?text='+encodeURIComponent(q)+'&maxSuggestions=4&f=json', sig);
+  return (d.suggestions||[]).map(s=>{ const parts=s.text.split(',').map(x=>x.trim()); return {src:'will', street:titleCase(parts[0]), city:titleCase(parts[1]||''), st:'IL', zip:'', text:s.text, magicKey:s.magicKey}; });
+}
+async function sugIndiana(q, sig){
+  const w = `prop_add LIKE '${q.replace(/'/g,"''")}%' AND county_id=45`;
+  const d = await jget('https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_2024/FeatureServer/0/query?where='+encodeURIComponent(w)+'&outFields=prop_add,prop_city,prop_zip,SHAPE__Area&returnGeometry=false&resultRecordCount=6&f=json', sig);
+  const seen=new Set();
+  return (d.features||[]).map(f=>f.attributes).filter(a=>a.prop_add && !/APPR/.test(a.prop_add)).filter(a=>{ if(seen.has(a.prop_add))return false; seen.add(a.prop_add); return true; })
+    .map(a=>({src:'in', street:titleCase(a.prop_add), city:titleCase(a.prop_city||''), st:'IN', zip:a.prop_zip||'', lot:Math.round(a.SHAPE__Area*10.7639)}));
+}
+async function acSearch(q){
+  if(acCtl) acCtl.abort(); acCtl=new AbortController(); const sig=acCtl.signal;
+  const Q=q.toUpperCase().replace(/\s+/g,' ');
+  const jobs = $('state').value==='IN' ? [sugIndiana(Q,sig)] : [sugCook(Q,sig), sugWill(Q,sig)];
+  const res = await Promise.allSettled(jobs);
+  if(sig.aborted) return;
+  acItems = res.flatMap(r=>r.status==='fulfilled'?r.value:[]).slice(0,8);
   if(!acItems.length){ acClose(); return; }
-  suggEl.innerHTML = acItems.map((p,i)=>`<li role="option" data-i="${i}" aria-selected="false">${acLabel(p)}<small>${p.city}, ${p.state==='Illinois'?'IL':'IN'} ${p.zip}</small></li>`).join('');
+  suggEl.innerHTML = acItems.map((p,i)=>`<li role="option" data-i="${i}" aria-selected="false">${p.street}<small>${p.city}, ${p.st}${p.zip?' '+p.zip:''}</small></li>`).join('');
   suggEl.hidden=false; acIdx=-1; streetEl.setAttribute('aria-expanded','true');
 }
-function acPick(i){
+async function acPick(i){
   const p=acItems[i]; if(!p) return;
-  streetEl.value=acLabel(p); $('city').value=p.city; $('state').value = p.state==='Indiana'?'IN':'IL';
-  acClose(); lookup();
+  streetEl.value=p.street; $('city').value=p.city; $('state').value=p.st; acClose();
+  const btn=$('go'); btn.disabled=true; setStatus('Pulling lot size from county records…');
+  try{
+    let res=null;
+    if(p.src==='cook'){
+      const ch = await jget(SOC+'x54s-btds.json?pin='+p.pin+'&$order=year%20DESC&$limit=1');
+      if(ch.length){ const c0=ch[0], t=(c0.char_type_resd||''); res={lot:+c0.char_land_sf, bldg:+c0.char_bldg_sf||null, stories:/split/i.test(t)?'split':/^2|two/i.test(t)?'2':'1', src:'Cook County', addr:p.street+', '+p.city, zip:p.zip}; }
+    } else if(p.src==='in'){
+      res={lot:p.lot, bldg:null, stories:null, src:'Lake County IN', addr:p.street+', '+p.city, zip:p.zip};
+    } else {
+      const g = await jget('https://gis.willcountyillinois.com/hosting/rest/services/Locators/WillCountyLocator_AddPts/GeocodeServer/findAddressCandidates?SingleLine='+encodeURIComponent(p.text)+'&magicKey='+encodeURIComponent(p.magicKey)+'&outFields=*&maxLocations=1&outSR=3435&f=json');
+      const c=(g.candidates||[])[0];
+      if(c){ const q=await jget('https://gis.willcountyillinois.com/server/rest/services/Basemap/Parcels_20/MapServer/0/query?geometry='+c.location.x+','+c.location.y+'&geometryType=esriGeometryPoint&inSR=3435&outFields=PIN,SHAPE_Area&returnGeometry=false&f=json');
+        const f=(q.features||[])[0]; if(f) res={lot:Math.round(f.attributes.SHAPE_Area), bldg:null, stories:null, src:'Will County', addr:p.street+', '+p.city, zip:''}; }
+    }
+    if(!res){ setStatus("Found the address but not a residential lot record for it. Enter the lot size below.", 'err'); $('manual').hidden=false; return; }
+    setStatus('',''); $('status').hidden=true; show(res);
+  }catch(e){ setStatus("Couldn't reach county records just now. Enter the lot size below or try again.", 'err'); $('manual').hidden=false; }
+  finally{ btn.disabled=false; }
 }
 streetEl.addEventListener('input', ()=>{
   clearTimeout(acTimer); const q=streetEl.value.trim();
-  if(q.length<4 || !/^\d/.test(q)){ acClose(); return; }
-  acTimer=setTimeout(()=>acSearch(q), 250);
+  if(q.length<4 || !/^\d+\s+\S/.test(q)){ acClose(); return; }
+  acTimer=setTimeout(()=>acSearch(q), 220);
 });
+$('state').addEventListener('change', ()=>{ const q=streetEl.value.trim(); if(q.length>=4) acSearch(q); });
 streetEl.addEventListener('keydown', e=>{
   if(!suggEl.hidden && acItems.length){
     if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); acIdx=(acIdx+(e.key==='ArrowDown'?1:-1)+acItems.length)%acItems.length;
