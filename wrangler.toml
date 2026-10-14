@@ -1,0 +1,9 @@
+# Cloudflare Worker: Jobber lead bridge (code in worker/src). The quote page itself is served by GitHub Pages.
+name = "cardinal-maint-quote"
+main = "worker/src/index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://cardinal1212.github.io,https://quote.cardinallm.net"
+JOBBER_API_VERSION = "2025-04-16"
+# Secrets (Cloudflare → Worker → Settings → Variables and Secrets): JOBBER_CLIENT_ID, JOBBER_CLIENT_SECRET, JOBBER_REFRESH_TOKEN
