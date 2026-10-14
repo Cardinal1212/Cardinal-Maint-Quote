@@ -110,6 +110,14 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
 
 
 
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','3914598668676670');fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=3914598668676670&ev=PageView&noscript=1"></noscript>
+</head>
+<body>
 <div class="band"><div class="in">
   <div class="topline">
     <img class="logo" src="../assets/logo.png" alt="Cardinal Landscaping, Maintenance &amp; Snow Removal">
@@ -176,7 +184,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v18</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v19</span></p>
 </div>
 
 <script>
@@ -295,7 +303,7 @@ function show(res){
   $('s4h').textContent = P.inArea ? 'Lock it in' : 'Leave your info';
   $('s4sub').hidden = P.inArea;
   renderServices();
-  if(booted) $('s2').scrollIntoView({behavior:'smooth',block:'start'});
+  if(booted){ $('s2').scrollIntoView({behavior:'smooth',block:'start'}); try{ if(window.fbq) fbq('track','ViewContent',{content_name:'lawn_price', value: res.lot, currency:'USD'}); }catch(_){} }
   $('manual').hidden=true;
 }
 
@@ -476,6 +484,7 @@ $('book').addEventListener('submit', async e=>{
       const d=await r.json().catch(()=>({}));
       if(!r.ok||!d.ok) throw new Error(d.error||('Request failed ('+r.status+')'));
       window.__lead=d;
+      try{ if(window.fbq){ fbq('track','Lead',{content_name: COMMERCIAL?'commercial':'residential', value: payload.total||0, currency:'USD'}); } }catch(_){}
     }catch(ex){
       err.textContent="We couldn't send that just now ("+ex.message+"). Call or text us at the number below and we'll get you on the schedule.";
       err.hidden=false; btn.disabled=false; btn.textContent='Request service'; return;
