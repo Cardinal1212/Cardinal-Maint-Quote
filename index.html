@@ -91,11 +91,9 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
 <section class="card" id="s1">
   <p class="step">Step 1</p>
   <h2>Where's the lawn?</h2>
-  <div class="row c3">
-    <div class="ac"><label for="street">Street address</label><input type="text" id="street" placeholder="Start typing: 1344 Jill Ter…" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sugg"><ul id="sugg" role="listbox" hidden></ul></div>
-    <div><label for="city">City</label><input type="text" id="city" placeholder="Homewood" autocomplete="address-level2"></div>
-    <div><label for="state">State</label><select id="state"><option value="IL">Illinois</option><option value="IN">Indiana</option></select></div>
-  </div>
+  <div class="ac"><label for="street">Street address</label><input type="text" id="street" placeholder="Start typing: 1344 Jill Ter…" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sugg"><ul id="sugg" role="listbox" hidden></ul></div>
+  <p class="hint">Illinois south suburbs and Northwest Indiana. Pick your address from the list as it appears.</p>
+  <input type="hidden" id="city" value=""><input type="hidden" id="state" value="IL">
   <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
     <button class="btn" id="go">See my price</button>
     <button class="btn sec" id="manualBtn" type="button">I know my lot size</button>
@@ -152,7 +150,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v3</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v4</span></p>
 </div>
 
 <script>
@@ -222,9 +220,9 @@ async function lookup(){
   if(!ps){ setStatus('Enter a street number and name, like "1344 Jill Terrace".', 'err'); return; }
   const btn=$('go'); btn.disabled=true; setStatus('Checking county records…');
   try{
-    let res=null;
-    if(st==='IN') res = await lookupIndiana(ps.num, ps.word);
-    else { res = await lookupCook(ps.num, ps.word, city); if(!res) res = await lookupWill(street, city); }
+    let res = await lookupCook(ps.num, ps.word, city);
+    if(!res) res = await lookupIndiana(ps.num, ps.word);
+    if(!res) res = await lookupWill(street, city);
     if(!res){ setStatus("We couldn't find that address in county records. Check the spelling, or enter the lot size yourself.", 'err'); $('manual').hidden=false; return; }
     setStatus('', ''); $('status').hidden=true;
     show(res);
@@ -327,11 +325,12 @@ async function sugIndiana(q, sig){
 async function acSearch(q){
   if(acCtl) acCtl.abort(); acCtl=new AbortController(); const sig=acCtl.signal;
   const Q=q.toUpperCase().replace(/\s+/g,' ');
-  const jobs = $('state').value==='IN' ? [sugIndiana(Q,sig)] : [sugCook(Q,sig), sugWill(Q,sig)];
+  const jobs = [sugCook(Q,sig), sugWill(Q,sig), sugIndiana(Q,sig)];
   setStatus('Searching county records…');
   const res = await Promise.allSettled(jobs);
   if(sig.aborted) return;
-  acItems = res.flatMap(r=>r.status==='fulfilled'?r.value:[]).slice(0,8);
+  const [ck,wl,ind]=res.map(r=>r.status==='fulfilled'?r.value:[]);
+  acItems = [...ck, ...ind, ...wl].slice(0,8);
   if(!acItems.length){
     acClose();
     const errs = res.filter(r=>r.status==='rejected').map(r=>String(r.reason && r.reason.message || r.reason));
@@ -369,7 +368,6 @@ streetEl.addEventListener('input', ()=>{
   if(q.length<4 || !/^\d+\s+\S/.test(q)){ acClose(); return; }
   acTimer=setTimeout(()=>acSearch(q), 220);
 });
-$('state').addEventListener('change', ()=>{ const q=streetEl.value.trim(); if(q.length>=4) acSearch(q); });
 streetEl.addEventListener('keydown', e=>{
   if(!suggEl.hidden && acItems.length){
     if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); acIdx=(acIdx+(e.key==='ArrowDown'?1:-1)+acItems.length)%acItems.length;
