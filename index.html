@@ -172,7 +172,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v13</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v14</span></p>
 </div>
 
 <script>
@@ -474,7 +474,7 @@ $('book').addEventListener('submit', async e=>{
   }
   $('thanksBody').innerHTML = `<div class="hint">${payload.name} · ${payload.phone}${payload.email?' · '+payload.email:''}<br>${COMMERCIAL ? ($('company').value.trim()+' · '+$('commAddr').value.trim()) : (P.addr+' · '+sf.toLocaleString()+' sq ft')}</div>
     <ul class="sum">${COMMERCIAL ? '<li><span>Commercial property maintenance</span><span>Priced after site visit</span></li>' : (lines.map(l=>`<li><span>${l.name}</span><span>${l.price}</span></li>`).join('')||'<li><span>No services selected</span><span></span></li>')}</ul>
-    <p class="hint">${LEAD_ENDPOINT ? (COMMERCIAL ? 'Got it. We\'ll reach out within one business day to schedule a site visit.' : P.inArea===false ? 'Got it. We\'ll reach out if we can service your area.' : 'Your quote is being prepared — watch for a text and email from Cardinal with a link to approve it and put a card on file. No charge until we mow.') : 'Prototype: on the live site this creates a client and request in Jobber automatically.'}</p>`;
+    <p class="hint">${LEAD_ENDPOINT ? (COMMERCIAL ? 'Got it. We\'ll reach out within one business day to schedule a site visit.' : P.inArea===false ? 'Got it. We\'ll reach out if we can service your area.' : 'Your quote is being prepared. During business hours it\'s in your text and email within the hour; overnight or weekend requests go out first thing the next business morning. Approve it online and put a card on file — no charge until we mow.') : 'Prototype: on the live site this creates a client and request in Jobber automatically.'}</p>`;
   $('book').hidden=true; $('thanks').hidden=false;
 });
 
