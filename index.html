@@ -26,8 +26,9 @@
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
 .band{background:var(--band);color:var(--band-fg);border-bottom:4px solid var(--accent)}
-.logo{display:block;width:min(260px,70vw);height:auto;margin-bottom:6px}
-.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{display:block;width:160px;height:auto;margin-bottom:4px}
+@media(min-width:600px){.logo{width:260px}}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:nowrap;min-width:0}
 .phone{font-family:var(--display);font-weight:700;font-size:20px;color:var(--blue);text-decoration:none;white-space:nowrap}
 .phone small{display:block;font-family:var(--body);font-weight:500;font-size:12px;color:var(--band-muted);letter-spacing:.06em;text-transform:uppercase}
 .reviews{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
@@ -36,7 +37,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px
 .trust{font-size:14px;color:var(--band-muted)}
 .trust{color:var(--accent)}
 .trust span{color:var(--band-muted);font-weight:500;margin-left:6px}
-.band .in{max-width:680px;margin:0 auto;padding-block:22px 18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:4px}
+.band .in{max-width:680px;margin:0 auto;padding-block:16px 16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:4px}
 .brand{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray)}
 h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,7vw,46px);line-height:1;margin:0;text-wrap:balance}
 .band p{margin:4px 0 0;color:var(--band-muted);max-width:52ch}
@@ -175,7 +176,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v10</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v11</span></p>
 </div>
 
 <script>
