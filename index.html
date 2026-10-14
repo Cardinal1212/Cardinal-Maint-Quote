@@ -33,6 +33,9 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px
 .reviews{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
 .rev{flex:1 1 220px;min-width:0;font-size:14px;color:var(--band-fg);background:var(--soft);border-radius:8px;padding:10px 12px}
 .rev b{display:block;color:var(--blue);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.trust{font-size:14px;color:var(--band-muted)}
+.trust{color:var(--accent)}
+.trust span{color:var(--band-muted);font-weight:500;margin-left:6px}
 .band .in{max-width:680px;margin:0 auto;padding-block:22px 18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:4px}
 .brand{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray)}
 h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,7vw,46px);line-height:1;margin:0;text-wrap:balance}
@@ -172,7 +175,7 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v9</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v10</span></p>
 </div>
 
 <script>
@@ -189,8 +192,9 @@ const FALL_2VISIT = 1.6;              // two-visit fall = 1.6 × single
 const TREE = {light:1.0, avg:1.15, heavy:1.35};   // fall cleanup multiplier
 const GUTTER = {'1':195, split:245, '2':295, bigHome:50, bigHomeSf:3000};  // add-on, only with a cleanup
 const RANGE_UP = 1.10;                // show "from–to" as price → price×1.10
-const PHONE = '';                     // e.g. '(708) 555-0123' — shows in the header when set
+const PHONE = '(708) 527-1707';       // shows as tap-to-call in the header
 const REVIEWS = [];                   // e.g. [{q:'Showed up on time, lawn looks great.', who:'Maria R., Lansing'}]
+const TRUST_LINE = '90% recommend · 8 reviews on Facebook';   // shown under the headline when REVIEWS is empty
 const LEAD_ENDPOINT = 'https://cardinal-maint-quote.office-333.workers.dev/lead';             // Cloudflare Worker URL + '/lead' once deployed, e.g. 'https://cardinal-quote-leads.xxx.workers.dev/lead'
 const SERVICE_ZIPS = ['60409','60411','60417','60419','60422','60425','60426','60429','60430','60438','60443','60461','60462','60464','60466','60469','60471','60473','60475','60476','60478','60484','46307','46311','46319','46321','46322','46342','46356','46373','46375','46410','46311'];
 /* =============================================================== */
@@ -480,6 +484,7 @@ booted = false;
 if(OFFICE) $('officeBadge').hidden=false;
 if(PHONE){ $('phoneTxt').textContent=PHONE; $('phoneLink').href='tel:'+PHONE.replace(/\D/g,''); $('phoneLink').hidden=false; }
 if(REVIEWS.length){ $('reviews').innerHTML=REVIEWS.slice(0,3).map(r=>`<div class="rev">“${r.q}”<b>${r.who}</b></div>`).join(''); $('reviews').hidden=false; }
+else if(TRUST_LINE){ $('reviews').innerHTML=`<div class="trust">★★★★★ <span>${TRUST_LINE}</span></div>`; $('reviews').hidden=false; }
 show({lot:7500, bldg:1205, stories:'1', src:'Example', addr:'Example: 2911 194th St, Lansing (replace with a real address above)', zip:'60438'});
 booted = true;
 </script>
