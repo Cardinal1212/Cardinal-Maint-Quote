@@ -1,0 +1,23 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Ad image helper</title>
+<style>body{font:14px system-ui;background:#14171b;color:#eee;padding:20px}</style></head>
+<body><h3>Cardinal ad image helper</h3><pre id="log">starting…</pre>
+<script>
+(async () => {
+  const log = (m) => { document.getElementById('log').textContent += '\n' + m; };
+  const names = (new URLSearchParams(location.search).get('names') || 'Cardinal_FB_A_speed_1080x1350,Cardinal_FB_B_fall_1080x1350,Cardinal_FB_C_price_1080x1350,Cardinal_FB_A_speed_1080x1080,Cardinal_FB_B_fall_1080x1080,Cardinal_FB_C_price_1080x1080').split(',');
+  const target = window.opener || window.parent;
+  if (!target || target === window) { log('no opener/parent'); return; }
+  for (const n of names) {
+    try {
+      const r = await fetch('/assets/ads/' + n + '.jpg', { cache: 'no-store' });
+      const b = await r.blob();
+      const b64 = await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result.split(',')[1]); fr.readAsDataURL(b); });
+      target.postMessage({ name: n, b64 }, 'https://adsmanager.facebook.com');
+      log('sent ' + n + ' (' + b.size + ' bytes)');
+    } catch (e) { log('failed ' + n + ': ' + e); }
+  }
+  target.postMessage({ done: true }, 'https://adsmanager.facebook.com');
+  log('done');
+})();
+</script></body></html>
