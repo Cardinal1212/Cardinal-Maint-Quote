@@ -47,8 +47,11 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px
 .rev{flex:1 1 220px;min-width:0;font-size:14px;color:var(--band-fg);background:var(--soft);border-radius:8px;padding:10px 12px}
 .rev b{display:block;color:var(--blue);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
 .trust{font-size:13px;color:var(--band-muted)}
-.promo{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;font-size:14px}
-.promo small{display:block;font-weight:400;font-size:12px;opacity:.9}
+.promo{margin-top:10px;padding:10px 12px;border-radius:10px;background:linear-gradient(100deg,#f29a2e 0%,#d8611c 100%);color:#fff;font-weight:600;font-size:14px;display:flex;gap:10px;align-items:flex-start;box-shadow:0 2px 8px rgba(216,97,28,.25)}
+.promo svg{flex:none;width:26px;height:26px;margin-top:1px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.2))}
+.promo .tag{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.22);padding:2px 7px;border-radius:999px;margin-bottom:3px}
+.promo small{display:block;font-weight:400;font-size:12px;opacity:.92;margin-top:2px}
+.promo b{font-weight:700}
 .trust{color:var(--accent)}
 .trust span{color:var(--band-fg);font-weight:600;margin-left:6px}
 .trust .t2{color:var(--band-muted);font-weight:500}
@@ -184,7 +187,7 @@ fbq('init','3914598668676670');fbq('track','PageView');
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v19</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v20</span></p>
 </div>
 
 <script>
@@ -499,7 +502,9 @@ $('book').addEventListener('submit', async e=>{
 /* Opens in a working state so the flow is visible before any lookup. */
 booted = false;
 if(OFFICE) $('officeBadge').hidden=false;
-if(promoActive()){ const d=new Date(PROMO.ends+'T12:00:00'); $('promo').innerHTML=`${PROMO.label}<small>Pick "Two visits" under fall cleanup. Through ${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}.</small>`; $('promo').hidden=false; }
+if(promoActive()){ const d=new Date(PROMO.ends+'T12:00:00'); const ends=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  const leaf='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff3d6" d="M20 3c-7 0-12 2.5-14.5 7.5C4 13.5 4.4 16.3 5 18l-2 2.5 1.5 1L6.5 19c1.8.6 4.6.9 7.5-.5C19 16 20.5 10 20 3z"/><path fill="none" stroke="#d8611c" stroke-width="1.2" stroke-linecap="round" d="M6.5 19c3-4 6-7 10.5-11M9.5 15.5c2.2.3 3.8.2 5.5-.4M11.5 12.5c1.8.2 3.2 0 4.5-.6"/></svg>';
+  $('promo').innerHTML=`${leaf}<div><span class="tag">Limited time · ends ${ends}</span><br>${PROMO.label.replace(PROMO.pct+'%','<b>'+PROMO.pct+'%</b>')}<small>Pick "Two visits" under fall cleanup and the discount applies automatically.</small></div>`; $('promo').hidden=false; }
 if(PHONE){ $('phoneTxt').textContent=PHONE; $('phoneLink').href='tel:'+PHONE.replace(/\D/g,''); $('phoneLink').hidden=false; }
 if(REVIEWS.length){ $('reviews').innerHTML=REVIEWS.slice(0,3).map(r=>`<div class="rev">“${r.q}”<b>${r.who}</b></div>`).join(''); $('reviews').hidden=false; }
 else if(TRUST_LINE){ $('reviews').innerHTML=`<div class="trust">★★★★★ <span>${TRUST_LINE}</span>${TRUST_LINE_2?`<span class="t2">· ${TRUST_LINE_2}</span>`:''}</div>`; $('reviews').hidden=false; }
