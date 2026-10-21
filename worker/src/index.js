@@ -129,8 +129,21 @@ async function ensureClientAndProperty(env, lead) {
 
 /* ---------- request ---------- */
 function buildDetails(lead, addr, returning) {
+  if (lead.kind === 'landscape' || lead.kind === 'snow') return buildKindDetails(lead, addr, returning);
   const flag = lead.landscape_interest ? '*** LANDSCAPE INTEREST — call about design/build (patio, drainage, planting) ***\n\n' : '';
   return flag + buildDetailsBody(lead, addr, returning);
+}
+// Landing-page leads from quote.cardinallm.net/landscape and /snow (Google Ads, Facebook, direct).
+function buildKindDetails(lead, addr, returning) {
+  const when = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
+  const src = lead.source ? `Source: ${lead.source}${lead.variant && lead.variant !== 'landscape' ? ` (${lead.variant} ad)` : ''}\n` : '';
+  if (lead.kind === 'snow') return `COMMERCIAL SNOW LEAD${returning ? ' (existing client)' : ''}\n` +
+    `Company/property: ${lead.company || '(not given)'} — ${lead.property_type || ''}\nAddress: ${addr.street1}, ${addr.city}, ${addr.province}\n` +
+    `Services: ${(lead.services_wanted || []).join(', ') || '(none picked)'}\nContract: ${lead.contract || '(not given)'}\nLot size: ${lead.lot_size || 'not sure'} · Locations: ${lead.locations || '1'}\n` +
+    (lead.customer_notes ? `\nCustomer notes: ${lead.customer_notes}\n` : '') + src + `Submitted ${when}`;
+  return `LANDSCAPE ESTIMATE REQUEST${returning ? ' (existing client)' : ''}\n` +
+    `Address: ${addr.street1}, ${addr.city}, ${addr.province}\nProject: ${(lead.project_types || []).join(', ') || '(none picked)'}\nBudget: ${lead.budget || 'not sure yet'}\nTiming: ${lead.timing || '(not given)'}\n` +
+    (lead.customer_notes ? `\nCustomer notes: ${lead.customer_notes}\n` : '') + src + `Submitted ${when}`;
 }
 function buildDetailsBody(lead, addr, returning) {
   const lines = (lead.services || []).map(s => `• ${s.name}: ${s.price}`).join('\n');
@@ -141,7 +154,7 @@ function buildDetailsBody(lead, addr, returning) {
     `Address: ${addr.street1}, ${addr.city}, ${addr.province} ${addr.postalCode}\n` +
     `Lot: ${Number(lead.lot_sf || 0).toLocaleString('en-US')} sq ft (${lead.lot_source || 'customer entered'})` + (lead.home ? ` · Home: ${lead.home}` : '') + `\n\n` +
     `Services selected:\n${lines || '(none)'}\n` + (lead.total ? `Selected today: ${money(lead.total)}\n` : '') +
-    (lead.notes ? `\nCustomer notes: ${lead.notes}\n` : '') +
+    (lead.notes ? `\nCustomer notes: ${lead.notes}\n` : '') + (lead.source ? `Source: ${lead.source}\n` : '') +
     `\nSubmitted ${new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' })}`;
 }
 
@@ -149,6 +162,27 @@ function buildDetailsBody(lead, addr, returning) {
 function buildRequestForm(lead, addr, returning) {
   const item = (label, answerText) => ({ label, answerText: String(answerText ?? '').slice(0, 1000) });
   const sections = [];
+  if (lead.kind === 'landscape' || lead.kind === 'snow') {
+    const when = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
+    const srcTxt = (lead.source || 'Direct') + (lead.variant && lead.variant !== 'landscape' ? ` (${lead.variant} ad)` : '');
+    if (lead.kind === 'snow') {
+      sections.push({ label: 'Commercial snow request', items: [
+        item('Company / property', lead.company || '(not given)'), item('Property type', lead.property_type || ''),
+        item('Address', `${addr.street1}, ${addr.city}, ${addr.province}`),
+        item('Services wanted', (lead.services_wanted || []).join(', ') || '(none picked)'), item('Contract preference', lead.contract || '(not given)'),
+        item('Approx. lot size', lead.lot_size || 'not sure'), item('Locations', lead.locations || '1'),
+        item('Lead source', srcTxt), item('Client', returning ? 'Existing client' : 'New client'),
+      ] });
+    } else {
+      sections.push({ label: 'Landscape estimate request', items: [
+        item('Project', (lead.project_types || []).join(', ') || '(none picked)'), item('Address', `${addr.street1}, ${addr.city}, ${addr.province}`),
+        item('Rough budget', lead.budget || 'not sure yet'), item('Timing', lead.timing || '(not given)'),
+        item('Lead source', srcTxt), item('Client', returning ? 'Existing client' : 'New client'),
+      ] });
+    }
+    sections.push({ label: 'Customer notes', items: [item('Notes', lead.customer_notes || '(none)'), item('Submitted', when)] });
+    return { form: { sections } };
+  }
   const overview = [
     item('Lead type', lead.commercial ? 'Commercial — special pricing by site visit' : (lead.in_area === false ? 'Residential — OUTSIDE service area' : 'Residential instant quote')),
     item('Address', `${addr.street1}, ${addr.city}, ${addr.province} ${addr.postalCode}`),
@@ -156,6 +190,7 @@ function buildRequestForm(lead, addr, returning) {
   if (lead.commercial && lead.company) overview.push(item('Company / property', lead.company));
   if (!lead.commercial) overview.push(item('Lot size', `${Number(lead.lot_sf || 0).toLocaleString('en-US')} sq ft (${lead.lot_source || 'customer entered'})` + (lead.home ? ` · Home: ${lead.home}` : '')));
   overview.push(item('Landscape interest', lead.landscape_interest ? 'YES — call about design/build (patio, drainage, planting)' : 'No'));
+  if (lead.source) overview.push(item('Lead source', lead.source));
   overview.push(item('Client', returning ? 'Existing client' : 'New client'));
   sections.push({ label: 'Instant quote site', items: overview });
 
@@ -231,7 +266,9 @@ async function createLead(env, lead) {
 
   const reqInput = {
     clientId: ids.clientId, ...(ids.propertyId ? { propertyId: ids.propertyId } : {}),
-    title: (lead.commercial ? 'Instant Quote Site — Commercial' : (lead.in_area === false ? 'Instant Quote Site — Out of area' : 'Instant Quote Site')) + (lead.landscape_interest ? ' + Landscaping' : ''),
+    title: lead.kind === 'snow' ? `Snow quote — ${String(lead.company || '').slice(0, 60) || 'commercial property'}${lead.source === 'Google Ads' ? ' (Google Ads)' : ''}`
+      : lead.kind === 'landscape' ? `Landscape estimate — ${(lead.project_types || []).slice(0, 3).join(', ') || 'project'}${lead.source === 'Google Ads' ? ' (Google Ads)' : ''}`
+      : (lead.commercial ? 'Instant Quote Site — Commercial' : (lead.in_area === false ? 'Instant Quote Site — Out of area' : 'Instant Quote Site')) + (lead.landscape_interest ? ' + Landscaping' : ''),
   };
   const reqMutation = `
     mutation ($input: RequestCreateInput!) {
@@ -249,7 +286,7 @@ async function createLead(env, lead) {
   const requestId = rr.requestCreate.request.id;
 
   let quote = null, quoteError = null;
-  if ((env.QUOTE_MODE || 'draft') !== 'off' && !lead.commercial && lead.in_area !== false) {
+  if ((env.QUOTE_MODE || 'draft') !== 'off' && !lead.commercial && lead.in_area !== false && !lead.kind) {
     try { quote = await createQuote(env, lead, ids, requestId); } catch (e) { quoteError = e.message; console.error('quote failed', e.message); }
   }
 

@@ -113,6 +113,13 @@ ul.sum li{display:flex;justify-content:space-between;gap:12px;padding:4px 0;bord
 
 
 
+<!-- Google Ads tag: fill in GADS once the conversion actions exist in the account. Loads nothing until then. -->
+<script>
+const GADS = { id:'', lead:'', call:'' };   // e.g. id:'AW-1234567890', lead:'AbCdEfGh', call:'IjKlMnOp'
+if(GADS.id){ const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+GADS.id; document.head.appendChild(s);
+  window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments)}; gtag('js',new Date()); gtag('config',GADS.id); }
+function gconv(kind){ try{ if(GADS.id && GADS[kind] && window.gtag) gtag('event','conversion',{send_to:GADS.id+'/'+GADS[kind]}); }catch(_){} }
+</script>
 <!-- Meta Pixel -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
@@ -187,7 +194,7 @@ fbq('init','3914598668676670');fbq('track','PageView');
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v20</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v21</span></p>
 </div>
 
 <script>
@@ -207,10 +214,10 @@ const RANGE_UP = 1.10;                // show "from–to" as price → price×1.
 const PROMO = { enabled:true, label:'Fall special: 10% off a two-visit leaf cleanup', pct:10, applies:['fall2'], ends:'2026-12-15' };  // switches itself off after `ends`
 const PHONE = '(708) 527-1707';       // shows as tap-to-call in the header
 const REVIEWS = [];                   // e.g. [{q:'Showed up on time, lawn looks great.', who:'Maria R., Lansing'}]
-const TRUST_LINE = '4.8★ on Google · 110+ reviews';   // shown under the headline when REVIEWS is empty
+const TRUST_LINE = '4.8★ on Google · 119 reviews';   // shown under the headline when REVIEWS is empty
 const TRUST_LINE_2 = '90% recommend on Facebook';
 const LEAD_ENDPOINT = 'https://cardinal-maint-quote.office-333.workers.dev/lead';             // Cloudflare Worker URL + '/lead' once deployed, e.g. 'https://cardinal-quote-leads.xxx.workers.dev/lead'
-const SERVICE_ZIPS = ['60409','60411','60417','60419','60422','60425','60426','60429','60430','60438','60443','60461','60462','60464','60466','60469','60471','60473','60475','60476','60478','60484','46307','46311','46319','46321','46322','46342','46356','46373','46375','46410','46311'];
+const SERVICE_ZIPS = ['60409','60411','60417','60419','60422','60423','60425','60426','60429','60430','60438','60443','60461','60462','60463','60464','60465','60466','60467','60469','60471','60473','60475','60476','60477','60478','60484','60487','46307','46311','46319','46321','46322','46342','46356','46373','46375','46410'];   // +Tinley Park, Frankfort, Palos Heights/Hills, Orland 60467 (Oct 2026)
 /* =============================================================== */
 
 const r5 = x => Math.round(x/5)*5;
@@ -475,6 +482,7 @@ $('book').addEventListener('submit', async e=>{
     in_area: P.inArea!==false,
     commercial: COMMERCIAL, company: COMMERCIAL ? $('company').value.trim() : '',
     landscape_interest: $('landscape').checked,
+    source: (new URLSearchParams(location.search).get('gclid') ? 'Google Ads' : new URLSearchParams(location.search).get('fbclid') ? 'Facebook' : (new URLSearchParams(location.search).get('utm_source') || 'Direct')),
     selected:{mow:!!sel.mow, fert:!!sel.fert, aer:!!sel.aer, spring:!!sel.spring, fall:!!sel.fall, gutter:!!((sel.spring||sel.fall)&&sel.gutter)},
     quote: (P.inArea===false || COMMERCIAL) ? {} : {mow:price('mow',sf), fert:price('fert',sf), aer:price('aer',sf), spring:price('spring',sf), fall:fallPrice(), fallVisits:sel.fallVisits, gutter:gutterPrice(), stories:sel.stories, tree:sel.tree, fallBase:fallBase(), promo: (fallPrice()<fallBase()) ? PROMO.label+' ('+PROMO.pct+'% off)' : ''}
   };
@@ -488,6 +496,7 @@ $('book').addEventListener('submit', async e=>{
       if(!r.ok||!d.ok) throw new Error(d.error||('Request failed ('+r.status+')'));
       window.__lead=d;
       try{ if(window.fbq){ fbq('track','Lead',{content_name: COMMERCIAL?'commercial':'residential', value: payload.total||0, currency:'USD'}); } }catch(_){}
+      gconv('lead');
     }catch(ex){
       err.textContent="We couldn't send that just now ("+ex.message+"). Call or text us at the number below and we'll get you on the schedule.";
       err.hidden=false; btn.disabled=false; btn.textContent='Request service'; return;
@@ -506,6 +515,7 @@ if(promoActive()){ const d=new Date(PROMO.ends+'T12:00:00'); const ends=d.toLoca
   const leaf='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff3d6" d="M20 3c-7 0-12 2.5-14.5 7.5C4 13.5 4.4 16.3 5 18l-2 2.5 1.5 1L6.5 19c1.8.6 4.6.9 7.5-.5C19 16 20.5 10 20 3z"/><path fill="none" stroke="#d8611c" stroke-width="1.2" stroke-linecap="round" d="M6.5 19c3-4 6-7 10.5-11M9.5 15.5c2.2.3 3.8.2 5.5-.4M11.5 12.5c1.8.2 3.2 0 4.5-.6"/></svg>';
   $('promo').innerHTML=`${leaf}<div><span class="tag">Limited time · ends ${ends}</span><br>${PROMO.label.replace(PROMO.pct+'%','<b>'+PROMO.pct+'%</b>')}<small>Pick "Two visits" under fall cleanup and the discount applies automatically.</small></div>`; $('promo').hidden=false; }
 if(PHONE){ $('phoneTxt').textContent=PHONE; $('phoneLink').href='tel:'+PHONE.replace(/\D/g,''); $('phoneLink').hidden=false; }
+$('phoneLink').addEventListener('click', ()=>{ gconv('call'); try{ if(window.fbq) fbq('track','Contact'); }catch(_){} });
 if(REVIEWS.length){ $('reviews').innerHTML=REVIEWS.slice(0,3).map(r=>`<div class="rev">“${r.q}”<b>${r.who}</b></div>`).join(''); $('reviews').hidden=false; }
 else if(TRUST_LINE){ $('reviews').innerHTML=`<div class="trust">★★★★★ <span>${TRUST_LINE}</span>${TRUST_LINE_2?`<span class="t2">· ${TRUST_LINE_2}</span>`:''}</div>`; $('reviews').hidden=false; }
 show({lot:7500, bldg:1205, stories:'1', src:'Example', addr:'Example: 2911 194th St, Lansing (replace with a real address above)', zip:'60438'});
