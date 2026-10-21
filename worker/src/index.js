@@ -139,7 +139,7 @@ function buildKindDetails(lead, addr, returning) {
   const src = lead.source ? `Source: ${lead.source}${lead.variant && lead.variant !== 'landscape' ? ` (${lead.variant} ad)` : ''}\n` : '';
   if (lead.kind === 'snow') return `COMMERCIAL SNOW LEAD${returning ? ' (existing client)' : ''}\n` +
     `Company/property: ${lead.company || '(not given)'} — ${lead.property_type || ''}\nAddress: ${addr.street1}, ${addr.city}, ${addr.province}\n` +
-    `Services: ${(lead.services_wanted || []).join(', ') || '(none picked)'}\nContract: ${lead.contract || '(not given)'}\nLot size: ${lead.lot_size || 'not sure'} · Locations: ${lead.locations || '1'}\n` +
+    `Services: ${(lead.services_wanted || []).join(', ') || '(none picked)'}\nContract: ${lead.contract || '(not given)'}\nPaved area: ${lead.lot_size || 'not sure'} · Trigger: ${lead.trigger || 'not sure'} · Locations: ${lead.locations || '1'}\n` +
     (lead.customer_notes ? `\nCustomer notes: ${lead.customer_notes}\n` : '') + src + `Submitted ${when}`;
   return `LANDSCAPE ESTIMATE REQUEST${returning ? ' (existing client)' : ''}\n` +
     `Address: ${addr.street1}, ${addr.city}, ${addr.province}\nProject: ${(lead.project_types || []).join(', ') || '(none picked)'}\nBudget: ${lead.budget || 'not sure yet'}\nTiming: ${lead.timing || '(not given)'}\n` +
@@ -170,7 +170,7 @@ function buildRequestForm(lead, addr, returning) {
         item('Company / property', lead.company || '(not given)'), item('Property type', lead.property_type || ''),
         item('Address', `${addr.street1}, ${addr.city}, ${addr.province}`),
         item('Services wanted', (lead.services_wanted || []).join(', ') || '(none picked)'), item('Contract preference', lead.contract || '(not given)'),
-        item('Approx. lot size', lead.lot_size || 'not sure'), item('Locations', lead.locations || '1'),
+        item('Approx. paved area', lead.lot_size || 'not sure'), item('Trigger depth', lead.trigger || 'not sure'), item('Locations', lead.locations || '1'),
         item('Lead source', srcTxt), item('Client', returning ? 'Existing client' : 'New client'),
       ] });
     } else {

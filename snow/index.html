@@ -101,8 +101,8 @@ fbq('init','3914598668676670');fbq('track','PageView');
   </div>
   <div class="brand">Commercial snow &amp; ice management</div>
   <h1>Lots, walks and entrances cleared before your people arrive.</h1>
-  <p>Seasonal contracts with an inch cap, or per-push pricing. Skid steers, plow trucks and sidewalk crews based in Lynwood, covering the south suburbs and NW Indiana. Free site walk, written quote the same week.</p>
-  <div class="trust">★★★★★ <span>4.8 on Google · 119 reviews</span><span class="t2">· $2M liability, umbrella &amp; workers comp</span></div>
+  <p>Seasonal contracts with an inch cap, or per-push pricing. Skid steers, plow trucks and sidewalk crews based in Lynwood, covering the south suburbs and NW Indiana. Free site walk, then a written quote with both options.</p>
+  <div class="trust">★★★★★ <span>4.8 on Google · 119 reviews</span><span class="t2">· Bonded &amp; insured: $2M general liability, umbrella, workers comp · COI on request</span></div>
   <div class="cta"><a class="btn" href="#request">Request a site walk</a><span class="hint" style="margin:0">2026–27 contracts are filling now.</span></div>
 </div></div>
 
@@ -148,12 +148,13 @@ fbq('init','3914598668676670');fbq('track','PageView');
           <button type="button" class="chip" data-w="Per push / per inch">Per push</button>
           <button type="button" class="chip" data-w="Not sure, show me both">Show me both</button>
         </div></div>
-      <div><label for="size">Approximate lot size</label><select id="size"><option value="">Not sure</option><option>Under 1 acre</option><option>1–3 acres</option><option>3–10 acres</option><option>10+ acres</option></select></div>
+      <div><label for="size">Approximate paved area</label><select id="size"><option value="">Not sure</option><option>Under 1 acre</option><option>1–3 acres</option><option>3–10 acres</option><option>10+ acres</option></select></div>
     </div>
     <div class="field row c2">
+      <div><label for="trigger">Plow trigger depth</label><select id="trigger"><option value="">Not sure / recommend one</option><option>1 inch</option><option>2 inches</option><option>Zero tolerance (salt + plow at any accumulation)</option></select></div>
       <div><label for="locs">Number of locations</label><select id="locs"><option>1</option><option>2–5</option><option>6+</option></select></div>
-      <div><label for="name">Your name</label><input type="text" id="name" required autocomplete="name"></div>
     </div>
+    <div class="field"><label for="name">Your name</label><input type="text" id="name" required autocomplete="name"></div>
     <div class="field row c2">
       <div><label for="phone">Phone</label><input type="tel" id="phone" required autocomplete="tel"></div>
       <div><label for="email">Email</label><input type="email" id="email" autocomplete="email"></div>
@@ -182,7 +183,7 @@ fbq('init','3914598668676670');fbq('track','PageView');
   <p class="hint">Commercial properties only. For a home driveway we're not the right fit, but we're happy to point you to someone.</p>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · <a href="tel:7085271707">(708) 527-1707</a> · office@cardinallm.net</p>
+<p class="foot">Cardinal Landscape Associates · 2249 Glenwood Dyer Rd, Lynwood, IL 60411 · Mon–Sat 8am–7pm · <a href="tel:7085271707">(708) 527-1707</a> · office@cardinallm.net · <a href="../privacy/">Privacy</a></p>
 </div>
 
 <script>
@@ -204,7 +205,7 @@ $('book').addEventListener('submit', async e=>{
     'SNOW LEAD — '+$('ptype').value,
     'Services: '+(svcs.join(', ')||'(none picked)'),
     'Contract: '+(contract||'(not given)'),
-    'Lot size: '+($('size').value||'Not sure')+' · Locations: '+$('locs').value,
+    'Paved area: '+($('size').value||'Not sure')+' · Trigger: '+($('trigger').value||'not sure')+' · Locations: '+$('locs').value,
     $('notes').value.trim() ? 'Notes: '+$('notes').value.trim() : '',
     'Source: '+source,
   ].filter(Boolean).join('\n');
@@ -212,7 +213,7 @@ $('book').addEventListener('submit', async e=>{
     kind:'snow', source,
     name:$('name').value.trim(), phone:$('phone').value.trim(), email:$('email').value.trim(), notes:detail, hp:$('website').value,
     address:{street:$('street').value.trim(), city:$('city').value.trim(), state:$('state').value, zip:''},
-    commercial:true, company:$('company').value.trim(), property_type:$('ptype').value, services_wanted:svcs, contract, lot_size:$('size').value, locations:$('locs').value, customer_notes:$('notes').value.trim(),
+    commercial:true, company:$('company').value.trim(), property_type:$('ptype').value, services_wanted:svcs, contract, lot_size:$('size').value, trigger:$('trigger').value, locations:$('locs').value, customer_notes:$('notes').value.trim(),
     landscape_interest:false, in_area:true, lot_sf:0, lot_source:'n/a', services:[], total:0, selected:{}, quote:{}, page:location.href,
   };
   const btn=e.target.querySelector('button[type=submit]');

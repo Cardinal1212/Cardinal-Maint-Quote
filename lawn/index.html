@@ -194,7 +194,7 @@ fbq('init','3914598668676670');fbq('track','PageView');
   </div>
 </section>
 
-<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Serving the south suburbs and NW Indiana · <span id="ver">v21</span></p>
+<p class="foot">Cardinal Landscape Associates · Lynwood, IL · Mon–Sat 8am–7pm · <a href="../privacy/" style="color:var(--blue);text-decoration:none">Privacy</a> · <span id="ver">v22</span></p>
 </div>
 
 <script>
@@ -203,9 +203,9 @@ const BASE_SF = 9000;                 // flat pricing up to this lot size
 const RATES = {
   mow:    {base:45,  per1k:2,  label:'Weekly mowing',            unit:'per cut',  sub:'Mow, trim, blow. Edging every other week. April–November.'},
   fert:   {base:90,  per1k:5,  label:'5-step fertilizer program', unit:'per app',  sub:'Five applications across the season. Price shown is per application.'},
-  aer:    {base:175, per1k:10, label:'Aeration + overseeding',    unit:'one visit',sub:'Core aeration with overseed. Spring or fall.'},
+  aer:    {base:175, per1k:10, label:'Aeration + overseeding',    unit:'one visit',sub:'From $175. Core aeration with overseed. Spring or fall.'},
   spring: {base:295, per1k:4,  label:'Spring cleanup',            unit:'one visit',sub:'Beds and lawn cleared, debris hauled, perennials cut back.'},
-  fall:   {base:295, per1k:6,  label:'Fall leaf cleanup',         unit:'',         sub:'Leaves blown out of beds and bushes, vacuumed off the property.'},
+  fall:   {base:295, per1k:6,  label:'Fall leaf cleanup',         unit:'',         sub:'From $295. Leaves blown out of beds and bushes, vacuumed off the property.'},
 };
 const FALL_2VISIT = 1.6;              // two-visit fall = 1.6 × single
 const TREE = {light:1.0, avg:1.15, heavy:1.35};   // fall cleanup multiplier
@@ -245,6 +245,8 @@ const FALL_SEASON = MONTH>=8 || MONTH<=1;                      // Aug–Jan: fal
 const exactOrRange = p => OFFICE ? money(p) : rangeTxt(p);
 let P = {lot:0, stories:null, bldg:null, src:'', addr:'', zip:''};
 let sel = {mow:true, fert:false, aer:false, spring:false, fall:false, fallVisits:1, tree:'avg', gutter:false, stories:'1'};
+const SVC = new URLSearchParams(location.search).get('svc');   // ad landing: ?svc=fall or ?svc=aer preselects that service
+if(SVC==='fall'){ sel.mow=false; sel.fall=true; } else if(SVC==='aer'){ sel.mow=false; sel.aer=true; }
 
 /* ---------- lookups ---------- */
 const SOC = 'https://datacatalog.cookcountyil.gov/resource/';
