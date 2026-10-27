@@ -39,6 +39,25 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.5vw,42px);l
 .trust span{color:var(--band-fg);font-weight:600;margin-left:6px}
 .trust .t2{color:var(--band-muted);font-weight:500}
 .cta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.perks{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.perks li{font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--band-fg)}
+.perks li::before{content:"✓ ";color:var(--ok)}
+/* Sticky call/text bar on phones */
+.callbar{display:none}
+@media(max-width:599px){
+  body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+  .callbar{display:flex;gap:8px;position:fixed;left:0;right:0;bottom:0;z-index:20;padding:8px max(12px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px));background:var(--band);border-top:1px solid var(--line);box-shadow:0 -2px 10px rgba(0,0,0,.08)}
+  .callbar a{flex:1;text-align:center;font-weight:600;font-size:15px;padding:11px 6px;border-radius:8px;text-decoration:none;border:1px solid var(--line);color:var(--fg);background:var(--card)}
+  .callbar a.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+}
+details.more{margin-top:12px;border:1px dashed var(--line);border-radius:8px;padding:8px 12px}
+details.more summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--blue)}
+.reviews{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:600px){.reviews{grid-template-columns:1fr 1fr 1fr}}
+.reviews blockquote{margin:0;background:var(--soft);border-radius:8px;padding:12px;font-size:14px}
+.reviews blockquote p{margin:0 0 8px}
+.reviews cite{font-style:normal;font-size:12px;color:var(--muted);font-weight:600}
+.reviews .st{color:var(--accent);font-size:13px;letter-spacing:1px}
 .wrap{max-width:680px;margin:0 auto;padding-block:14px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
 .step{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin:0 0 6px}
@@ -62,7 +81,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 .field{margin-top:12px}
 .gallery{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;-webkit-overflow-scrolling:touch}
 .gallery figure{margin:0;scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.gallery img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--soft)}
+.gallery img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;background:var(--soft)}
 .gallery figcaption{font-size:12px;color:var(--muted);padding:7px 10px}
 .steps{display:grid;grid-template-columns:1fr;gap:10px;margin:0;padding:0;list-style:none;counter-reset:s}
 @media(min-width:520px){.steps{grid-template-columns:1fr 1fr 1fr}}
@@ -81,7 +100,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 
 <!-- Google Ads tag: fill in GADS below once the conversion actions exist in the account. Loads nothing until then. -->
 <script>
-const GADS = { id:'AW-10839670202', lead:'GWKbCKTX0aQdELr74LAo', call:'' };   // Google Ads conversion tag + 'landscape' lead label (call label unused; calls counted via call asset)
+const GADS = { id:'AW-10839670202', lead:'GWKbCKTX0aQdELr74LAo', call:'8rm4CPGv5KsdELr74LAo' };   // Google Ads conversion tag + 'landscape' lead label (call = 'Website call/text tap' conversion, fired on tel:/sms: taps)
 if(GADS.id){ const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+GADS.id; document.head.appendChild(s);
   window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments)}; gtag('js',new Date()); gtag('config',GADS.id); }
 function gconv(kind){ try{ if(GADS.id && GADS[kind] && window.gtag) gtag('event','conversion',{send_to:GADS.id+'/'+GADS[kind]}); }catch(_){} }
@@ -99,19 +118,26 @@ fbq('init','3914598668676670');fbq('track','PageView');
     <img class="logo" src="../assets/logo.png" alt="Cardinal Landscape Associates">
     <a class="phone" id="phoneLink" href="tel:7085271707"><small>Call or text</small><span>(708) 527-1707</span></a>
   </div>
-  <h1 id="h1">Patios, outdoor living &amp; drainage. Designed in 3D, built by our own crews.</h1>
-  <p id="sub">Tell us about the project below. We call within one business day to set up a free on-site estimate, and you see a 3D design before anything gets built.</p>
+  <h1 id="h1">Patios, outdoor living &amp; drainage. Built by our own crews.</h1>
+  <p id="sub">Tell us about the project below. We call within one business day to set up a free on-site estimate.</p>
   <div class="trust">★★★★★ <span>4.8 on Google · 119 reviews</span><span class="t2">· Bonded &amp; insured: $2M general liability, umbrella, workers comp</span></div>
+  <ul class="perks"><li>Free on-site estimate</li><li>Financing available</li><li>Book by Nov 30 to lock in 2026 pricing</li></ul>
   <div class="cta"><a class="btn" href="#request">Request a free estimate</a><span class="hint" style="margin:0">Openings left on the fall install schedule.</span></div>
 </div></div>
 
 <div class="wrap">
 
 <div class="gallery" id="gallery" aria-label="Recent projects">
-  <figure><img src="https://images.squarespace-cdn.com/content/v1/640cea499a63e5441c4d4eb6/e9bd1a00-3360-4f0d-8ffe-7da4b80c87da/Screenshot+2026-04-08+151602.png?format=1000w" alt="Flagstone patio with a white pergola and outdoor dining set" loading="lazy"><figcaption>Flagstone patio &amp; pergola · Schererville, IN</figcaption></figure>
-  <figure><img src="https://images.squarespace-cdn.com/content/v1/640cea499a63e5441c4d4eb6/842e2347-252e-44ad-92c1-7d3f209041c3/IMG_3400.png?format=1000w" alt="Paver patio with raised planting beds and evergreen shrubs" loading="lazy"><figcaption>Paver patio &amp; raised beds · Schererville, IN</figcaption></figure>
+  <figure data-v="outdoor"><img src="../assets/projects/outdoor-pergola-firepit.jpg" width="900" height="675" alt="Paver patio with a black pergola, outdoor kitchen and gas fire pit" loading="lazy"><figcaption>Pergola, fire pit &amp; outdoor kitchen</figcaption></figure>
+  <figure data-v="outdoor"><img src="../assets/projects/outdoor-kitchen.jpg" width="900" height="675" alt="Outdoor kitchen with stainless built-in grill and cabinets" loading="lazy"><figcaption>Outdoor kitchen with built-in grill</figcaption></figure>
+  <figure data-v="outdoor"><img src="../assets/projects/outdoor-firepit.jpg" width="900" height="675" alt="Gas fire pit on a paver patio beside a stone seat wall" loading="lazy"><figcaption>Gas fire pit &amp; seat wall</figcaption></figure>
+  <figure data-v="outdoor"><img src="../assets/projects/outdoor-pergola-dining.jpg" width="900" height="675" alt="Dining table on a paver patio under a pergola" loading="lazy"><figcaption>Dining under the pergola</figcaption></figure>
+  <figure data-v="outdoor patio"><img src="../assets/projects/outdoor-walkway-patio.jpg" width="900" height="675" alt="Herringbone paver walkway leading to a patio and pergola" loading="lazy"><figcaption>Herringbone walkway to the patio</figcaption></figure>
+  <figure data-v="outdoor patio"><img src="../assets/projects/outdoor-walkway-fountains.jpg" width="900" height="675" alt="Paver walkway with raised stone beds and urn fountains" loading="lazy"><figcaption>Walkway, raised beds &amp; fountains</figcaption></figure>
+  <figure data-v="patio"><img src="https://images.squarespace-cdn.com/content/v1/640cea499a63e5441c4d4eb6/e9bd1a00-3360-4f0d-8ffe-7da4b80c87da/Screenshot+2026-04-08+151602.png?format=1000w" alt="Flagstone patio with a white pergola and outdoor dining set" loading="lazy"><figcaption>Flagstone patio &amp; pergola · Schererville, IN</figcaption></figure>
+  <figure data-v="patio"><img src="https://images.squarespace-cdn.com/content/v1/640cea499a63e5441c4d4eb6/842e2347-252e-44ad-92c1-7d3f209041c3/IMG_3400.png?format=1000w" alt="Paver patio with raised planting beds and evergreen shrubs" loading="lazy"><figcaption>Paver patio &amp; raised beds · Schererville, IN</figcaption></figure>
   <figure><img src="https://images.squarespace-cdn.com/content/v1/640cea499a63e5441c4d4eb6/0dc09c49-8b6f-4406-a5d9-e70340d64c18/Screenshot+2026-04-08+151829.png?format=1000w" alt="Tiered gray stone steps with potted plants" loading="lazy"><figcaption>Tiered stone steps · Schererville, IN</figcaption></figure>
-  <figure><img src="https://images.squarespace-cdn.com/content/v1/640cea499a63e5441c4d4eb6/7b2c55fc-a35b-4bb2-b5e7-11b8bfcbd530/IMG_2076.png?format=1000w" alt="Paver retaining wall stepping down a sloped landscape bed" loading="lazy"><figcaption>Paver retaining wall · Munster, IN</figcaption></figure>
+  <figure data-v="patio"><img src="https://images.squarespace-cdn.com/content/v1/640cea499a63e5441c4d4eb6/7b2c55fc-a35b-4bb2-b5e7-11b8bfcbd530/IMG_2076.png?format=1000w" alt="Paver retaining wall stepping down a sloped landscape bed" loading="lazy"><figcaption>Paver retaining wall · Munster, IN</figcaption></figure>
   <figure><img src="https://images.squarespace-cdn.com/content/v1/640cea499a63e5441c4d4eb6/2cf6c89f-d3e2-4fcd-84f1-2e33141fbad6/IMG_8786+%281%29.png?format=1000w" alt="Brick home with new front landscaping and lawn" loading="lazy"><figcaption>Front landscape &amp; sod · Lansing, IL</figcaption></figure>
 </div>
 
@@ -133,33 +159,34 @@ fbq('init','3914598668676670');fbq('track','PageView');
         <button type="button" class="chip" data-t="Something else">Something else</button>
       </div>
     </div>
-    <div class="field row c3">
-      <div><label for="street">Project address</label><input type="text" id="street" required autocomplete="street-address" placeholder="Street"></div>
-      <div><label for="city">City</label><input type="text" id="city" required autocomplete="address-level2" placeholder="City"></div>
-      <div><label for="state">State</label><select id="state" autocomplete="address-level1"><option value="IL">IL</option><option value="IN">IN</option></select></div>
-    </div>
     <div class="field row c2">
       <div><label for="name">Name</label><input type="text" id="name" required autocomplete="name"></div>
       <div><label for="phone">Phone</label><input type="tel" id="phone" required autocomplete="tel"></div>
     </div>
-    <div class="field"><label for="email">Email</label><input type="email" id="email" autocomplete="email"></div>
     <div class="field row c2">
-      <div><label for="budget">Rough budget (optional, helps us plan the right scope)</label>
-        <select id="budget"><option value="">Not sure yet</option><option>Under $5,000</option><option>$5,000 – $15,000</option><option>$15,000 – $30,000</option><option>$30,000+</option></select></div>
-      <div><label>When?</label>
-        <div class="chips" id="timing" role="group" aria-label="Timing">
-          <button type="button" class="chip" data-w="As soon as possible">ASAP</button>
-          <button type="button" class="chip" data-w="This fall">This fall</button>
-          <button type="button" class="chip" data-w="Spring 2027">Spring 2027</button>
-          <button type="button" class="chip" data-w="Just exploring">Just exploring</button>
-        </div></div>
+      <div><label for="city">City</label><input type="text" id="city" required autocomplete="address-level2" placeholder="City"></div>
+      <div><label for="state">State</label><select id="state" autocomplete="address-level1"><option value="IL">IL</option><option value="IN">IN</option></select></div>
     </div>
-    <div class="field"><label for="notes">Anything else? (size, materials you like, problem you're trying to solve)</label><textarea id="notes"></textarea></div>
+    <div class="field"><label>When?</label>
+      <div class="chips" id="timing" role="group" aria-label="Timing">
+        <button type="button" class="chip" data-w="As soon as possible">ASAP</button>
+        <button type="button" class="chip" data-w="This fall">This fall</button>
+        <button type="button" class="chip" data-w="Spring 2027">Spring 2027</button>
+        <button type="button" class="chip" data-w="Just exploring">Just exploring</button>
+      </div></div>
+    <details class="more">
+      <summary>Add more details (optional)</summary>
+      <div class="field"><label for="street">Street address (we can confirm it on the call)</label><input type="text" id="street" autocomplete="street-address" placeholder="Street"></div>
+      <div class="field"><label for="email">Email</label><input type="email" id="email" autocomplete="email"></div>
+      <div class="field"><label for="budget">Rough budget (helps us plan the right scope)</label>
+        <select id="budget"><option value="">Not sure yet</option><option>Under $5,000</option><option>$5,000 – $15,000</option><option>$15,000 – $30,000</option><option>$30,000+</option></select></div>
+      <div class="field"><label for="notes">Anything else? (size, materials you like, problem you're trying to solve)</label><textarea id="notes"></textarea></div>
+    </details>
     <div style="position:absolute;left:-9999px" aria-hidden="true"><label for="website">Website</label><input type="text" id="website" tabindex="-1" autocomplete="off"></div>
     <div id="bookErr" class="notice err" hidden></div>
     <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <button class="btn" type="submit">Request my free estimate</button>
-      <span class="hint" style="margin:0">No obligation. We call to set up the visit.</span>
+      <span class="hint" style="margin:0">No obligation. Financing available. We call to set up the visit.</span>
     </div>
   </form>
   <div id="thanks" class="done" hidden>
@@ -173,8 +200,18 @@ fbq('init','3914598668676670');fbq('track','PageView');
   <ol class="steps">
     <li><b>We call you</b>Within one business day to talk through the project and set a time.</li>
     <li><b>Free on-site visit</b>We measure, look at grades and drainage, and talk materials.</li>
-    <li><b>3D design + quote</b>You see it before it's built. Approve online when you're ready.</li>
+    <li><b>Clear, itemized quote</b>No surprises. Approve online when you're ready, with financing available.</li>
   </ol>
+</section>
+
+<section class="card">
+  <p class="step">What customers say</p>
+  <div class="reviews">
+    <blockquote><div class="st">★★★★★</div><p>“Their work is top notch. Everything was done meticulously and professionally, and the project managers were great to work with.”</p><cite>Lindsay W. · paver patio &amp; gas fire pit</cite></blockquote>
+    <blockquote><div class="st">★★★★★</div><p>“Everything turned out exactly as I hoped and looked even better once it was completed.”</p><cite>Ingrid S. · second project with Cardinal</cite></blockquote>
+    <blockquote><div class="st">★★★★★</div><p>“The patio came out amazing and the customer service was even better.”</p><cite>Mitchell K. · patio</cite></blockquote>
+  </div>
+  <p class="hint"><a href="https://maps.google.com/?cid=2332769720849916020" target="_blank" rel="noopener" style="color:var(--blue);font-weight:600;text-decoration:none">Read all 119 reviews on Google →</a></p>
 </section>
 
 <section class="card">
@@ -196,14 +233,20 @@ const q = new URLSearchParams(location.search);
 
 /* Headline variants so each ad group lands on copy that matches the search. ?p=outdoor | drainage | patio */
 const VARIANTS = {
-  patio:    { h1:'Paver patios, walls &amp; walkways. Designed in 3D, built by our own crews.', sub:'Tell us about the patio below. We call within one business day to set up a free on-site estimate, and you see a 3D design before anything gets built.', pre:['Paver patio'] },
-  outdoor:  { h1:'Outdoor kitchens, pergolas &amp; fire pits. Designed in 3D, built by our own crews.', sub:'Tell us what you want the backyard to do. We call within one business day to set up a free on-site estimate, and you see a 3D design before anything gets built.', pre:['Outdoor kitchen','Pergola','Fire pit / fireplace'] },
+  patio:    { h1:'Paver patios, walls &amp; walkways. Built by our own crews.', sub:'Tell us about the patio below. We call within one business day to set up a free on-site estimate.', pre:['Paver patio'] },
+  outdoor:  { h1:'Outdoor kitchens, pergolas &amp; fire pits. Built by our own crews.', sub:'Tell us what you want the backyard to do. We call within one business day to set up a free on-site estimate.', pre:['Outdoor kitchen','Pergola','Fire pit / fireplace'] },
   drainage: { h1:'Standing water? We fix yard drainage for good.', sub:'French drains, downspout extensions, regrading and dry creek beds. Tell us where the water collects and we call within one business day to set up a free on-site visit.', pre:['Drainage / standing water'] },
 };
 const v = VARIANTS[q.get('p')];
 const picked = new Set();
 if(v){ $('h1').innerHTML=v.h1; $('sub').textContent=v.sub; v.pre.forEach(t=>picked.add(t)); }
 document.querySelectorAll('#types .chip').forEach(b=>{ b.setAttribute('aria-pressed', picked.has(b.dataset.t)); });
+
+/* Show the photos that match the ad first (outdoor → kitchen/pergola/fire pit, patio → pavers). */
+if(v && (q.get('p')==='outdoor' || q.get('p')==='patio')){
+  const g=$('gallery'), key=q.get('p');
+  [...g.children].filter(f=>(f.dataset.v||'').split(' ').includes(key)).reverse().forEach(f=>g.prepend(f));
+}
 
 $('types').addEventListener('click', e=>{ const b=e.target.closest('.chip'); if(!b) return; const on=b.getAttribute('aria-pressed')!=='true'; b.setAttribute('aria-pressed',on); if(on) picked.add(b.dataset.t); else picked.delete(b.dataset.t); });
 let timing='';
@@ -213,7 +256,8 @@ $('timing').addEventListener('click', e=>{ const b=e.target.closest('.chip'); if
 const source = q.get('gclid') ? 'Google Ads' : q.get('fbclid') ? 'Facebook' : (q.get('utm_source') || (document.referrer ? 'Referral: '+document.referrer.replace(/^https?:\/\//,'').split('/')[0] : 'Direct'));
 const variant = q.get('p') || 'landscape';
 
-$('phoneLink').addEventListener('click', ()=>{ gconv('call'); try{ if(window.fbq) fbq('track','Contact'); }catch(_){} });
+/* Any tap on a call or text link (header, sticky bar, footer, thank-you) counts as a call conversion. */
+document.addEventListener('click', e=>{ const a=e.target.closest('a[href^="tel:"],a[href^="sms:"]'); if(!a) return; gconv('call'); try{ if(window.fbq) fbq('track','Contact'); }catch(_){} });
 
 $('book').addEventListener('submit', async e=>{
   e.preventDefault();
@@ -230,7 +274,7 @@ $('book').addEventListener('submit', async e=>{
   const payload = {
     kind:'landscape', source, variant,
     name:$('name').value.trim(), phone:$('phone').value.trim(), email:$('email').value.trim(), notes:detail, hp:$('website').value,
-    address:{street:$('street').value.trim(), city:$('city').value.trim(), state:$('state').value, zip:''},
+    address:{street:$('street').value.trim() || 'Address to confirm on call', city:$('city').value.trim(), state:$('state').value, zip:''},
     project_types:types, budget:$('budget').value, timing, customer_notes:$('notes').value.trim(),
     commercial:false, landscape_interest:true, in_area:true, lot_sf:0, lot_source:'n/a', services:[], total:0, selected:{}, quote:{}, page:location.href,
   };
@@ -247,11 +291,16 @@ $('book').addEventListener('submit', async e=>{
   }
   gconv('lead');
   try{ if(window.fbq) fbq('track','Lead',{content_name:'landscape_'+variant}); }catch(_){}
-  $('thanksBody').innerHTML = `<div class="hint">${payload.name} · ${payload.phone}${payload.email?' · '+payload.email:''}<br>${payload.address.street}, ${payload.address.city}</div>
+  $('thanksBody').innerHTML = `<div class="hint">${payload.name} · ${payload.phone}${payload.email?' · '+payload.email:''}<br>${$('street').value.trim() ? $('street').value.trim()+', ' : ''}${payload.address.city}</div>
     <p class="hint">${types.join(', ')}${timing?' · '+timing:''}</p>
     <p class="hint">Want to talk sooner? Call or text <a href="tel:7085271707" style="color:var(--blue);font-weight:600;text-decoration:none">(708) 527-1707</a>, Mon–Sat 8–7.</p>`;
   $('book').hidden=true; $('thanks').hidden=false; $('thanks').scrollIntoView({behavior:'smooth',block:'center'});
 });
 </script>
+<nav class="callbar" aria-label="Contact">
+  <a class="primary" href="tel:7085271707">Call</a>
+  <a href="sms:+17085271707">Text</a>
+  <a href="#request">Free estimate</a>
+</nav>
 </body>
 </html>

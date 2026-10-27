@@ -81,7 +81,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 
 <!-- Google Ads tag: fill in GADS once the conversion actions exist. Loads nothing until then. -->
 <script>
-const GADS = { id:'AW-10839670202', lead:'tnqDCKfX0aQdELr74LAo', call:'' };   // Google Ads conversion tag + 'snow' lead label (call label unused; calls counted via call asset)
+const GADS = { id:'AW-10839670202', lead:'tnqDCKfX0aQdELr74LAo', call:'8rm4CPGv5KsdELr74LAo' };   // Google Ads conversion tag + 'snow' lead label (call = 'Website call/text tap' conversion, fired on tel:/sms: taps)
 if(GADS.id){ const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+GADS.id; document.head.appendChild(s);
   window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments)}; gtag('js',new Date()); gtag('config',GADS.id); }
 function gconv(kind){ try{ if(GADS.id && GADS[kind] && window.gtag) gtag('event','conversion',{send_to:GADS.id+'/'+GADS[kind]}); }catch(_){} }
