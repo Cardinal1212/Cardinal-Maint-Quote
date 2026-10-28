@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paver Patio Price Estimator | Cardinal Landscape Associates</title>
+<meta name="description" content="See a ballpark price for a paver patio in Chicago's south suburbs and NW Indiana in 30 seconds. Then book a free on-site estimate with Cardinal Landscape Associates.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="../assets/icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Same system as /lawn: one column, max 680px, white header band with red rule, cards below. */
+:root{
+  --bg:#f4f5f7; --fg:#1c2126; --muted:#6b7076; --card:#ffffff; --line:#d9dde3; --soft:#eceff3;
+  --accent:#e81820; --accent-fg:#ffffff; --blue:#1840b8; --gray:#888888; --ok:#2f7d4f; --warn:#9a6400; --warn-bg:#fff4dd;
+  --band:#ffffff; --band-fg:#1c2126; --band-muted:#6b7076;
+  --display:'Barlow Condensed',Impact,'Arial Narrow',sans-serif;
+  --body:'IBM Plex Sans','Segoe UI',Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#14171b; --fg:#eef0f3; --muted:#a3a9b1; --card:#1d2126; --line:#2e343b; --soft:#242930;
+  --accent:#ff3b42; --accent-fg:#ffffff; --blue:#6f8cff; --gray:#a0a0a0; --ok:#5fc285; --warn:#e0a53a; --warn-bg:#2d2410;
+  --band:#0f1114; --band-fg:#eef0f3; --band-muted:#a3a9b1; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#14171b; --fg:#eef0f3; --muted:#a3a9b1; --card:#1d2126; --line:#2e343b; --soft:#242930;
+  --accent:#ff3b42; --accent-fg:#ffffff; --blue:#6f8cff; --gray:#a0a0a0; --ok:#5fc285; --warn:#e0a53a; --warn-bg:#2d2410;
+  --band:#0f1114; --band-fg:#eef0f3; --band-muted:#a3a9b1; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+.band{background:var(--band);color:var(--band-fg);border-bottom:4px solid var(--accent)}
+.band .in{max-width:680px;margin:0 auto;padding-block:14px 16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:6px}
+.logo{display:block;width:120px;height:auto}
+@media(min-width:600px){.logo{width:260px}}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;min-width:0}
+.phone{font-family:var(--display);font-weight:700;font-size:18px;color:var(--blue);text-decoration:none;white-space:nowrap}
+.phone small{display:block;font-family:var(--body);font-weight:500;font-size:12px;color:var(--band-muted);letter-spacing:.06em;text-transform:uppercase}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.5vw,42px);line-height:1;margin:8px 0 4px;text-wrap:balance}
+.band p{margin:4px 0 0;color:var(--band-muted);max-width:56ch}
+.trust{font-size:13px;color:var(--accent);margin-top:6px}
+.trust span{color:var(--band-fg);font-weight:600;margin-left:6px}
+.trust .t2{color:var(--band-muted);font-weight:500}
+.cta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.perks{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.perks li{font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--band-fg)}
+.perks li::before{content:"✓ ";color:var(--ok)}
+/* Sticky call/text bar on phones */
+.callbar{display:none}
+@media(max-width:599px){
+  body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+  .callbar{display:flex;gap:8px;position:fixed;left:0;right:0;bottom:0;z-index:20;padding:8px max(12px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px));background:var(--band);border-top:1px solid var(--line);box-shadow:0 -2px 10px rgba(0,0,0,.08)}
+  .callbar a{flex:1;text-align:center;font-weight:600;font-size:15px;padding:11px 6px;border-radius:8px;text-decoration:none;border:1px solid var(--line);color:var(--fg);background:var(--card)}
+  .callbar a.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+}
+details.more{margin-top:12px;border:1px dashed var(--line);border-radius:8px;padding:8px 12px}
+details.more summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--blue)}
+.reviews{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:600px){.reviews{grid-template-columns:1fr 1fr 1fr}}
+.reviews blockquote{margin:0;background:var(--soft);border-radius:8px;padding:12px;font-size:14px}
+.reviews blockquote p{margin:0 0 8px}
+.reviews cite{font-style:normal;font-size:12px;color:var(--muted);font-weight:600}
+.reviews .st{color:var(--accent);font-size:13px;letter-spacing:1px}
+.wrap{max-width:680px;margin:0 auto;padding-block:14px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.step{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin:0 0 6px}
+h2{font-family:var(--display);font-weight:700;font-size:26px;line-height:1.05;margin:0 0 12px;text-wrap:balance}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+input[type=text],input[type=tel],input[type=email],input[type=number],select,textarea{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+textarea{min-height:84px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:520px){.row.c2{grid-template-columns:1fr 1fr}.row.c3{grid-template-columns:2fr 1fr 1fr}}
+.row>div{min-width:0}
+.btn{font:inherit;font-weight:600;font-size:16px;padding:12px 18px;border-radius:8px;border:1px solid transparent;cursor:pointer;background:var(--accent);color:var(--accent-fg);text-decoration:none;display:inline-block}
+.btn.sec{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn:disabled{opacity:.6;cursor:wait}
+.hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+.notice{border-radius:8px;padding:10px 12px;font-size:14px;margin-top:12px;background:var(--soft)}
+.notice.err{border-left:4px solid var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{font:inherit;font-size:14px;font-weight:500;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--blue);color:#fff;border-color:var(--blue)}
+.field{margin-top:12px}
+.gallery{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.gallery figure{margin:0;scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.gallery img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;background:var(--soft)}
+.gallery figcaption{font-size:12px;color:var(--muted);padding:7px 10px}
+.steps{display:grid;grid-template-columns:1fr;gap:10px;margin:0;padding:0;list-style:none;counter-reset:s}
+@media(min-width:520px){.steps{grid-template-columns:1fr 1fr 1fr}}
+.steps li{position:relative;padding:12px 12px 12px 46px;background:var(--soft);border-radius:8px;font-size:14px}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:12px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--display);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center}
+.steps b{display:block;font-family:var(--display);font-size:17px;font-weight:700;margin-bottom:2px}
+.list{columns:2;column-gap:18px;margin:0;padding-left:18px;font-size:14px}
+.list li{break-inside:avoid;padding:2px 0}
+.done{text-align:center;padding:14px 0}
+.done b{font-family:var(--display);font-size:28px;display:block}
+.foot{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+.foot a{color:var(--blue);font-weight:600;text-decoration:none}
+.swap{font-size:14px;color:var(--muted);text-align:center;margin-top:-6px}
+/* Hero photo that matches the ad, stat strip, deadline box, review strip */
+.hero{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin-top:6px;background:var(--soft)}
+@media(min-width:600px){.hero{aspect-ratio:21/9}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.stats div{background:var(--soft);border-radius:8px;padding:7px 4px;text-align:center;line-height:1.15}
+.stats b{display:block;font-family:var(--display);font-weight:700;font-size:21px;color:var(--band-fg)}
+.stats span{display:block;font-size:11px;color:var(--band-muted);margin-top:2px}
+.ins{font-size:12px;color:var(--band-muted);margin-top:6px}
+.deadline{margin-top:10px;border:2px solid var(--accent);background:var(--warn-bg);border-radius:10px;padding:10px 12px;font-size:15px;color:var(--fg)}
+.deadline b{color:var(--accent)}
+.deadline small{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.rstrip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(250px,82%);gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+@media(min-width:600px){.rstrip{grid-auto-columns:minmax(250px,1fr)}}
+.rstrip blockquote{scroll-snap-align:start;margin:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:14px;display:flex;flex-direction:column;gap:6px}
+.rstrip blockquote p{margin:0;flex:1}
+.rstrip cite{font-style:normal;font-size:12px;color:var(--muted);font-weight:600}
+.rstrip .st{color:var(--accent);font-size:13px;letter-spacing:1px}
+.rhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
+.rhead b{font-family:var(--display);font-size:20px}
+.rhead a{font-size:13px;color:var(--blue);font-weight:600;text-decoration:none;white-space:nowrap}
+.swap a{color:var(--blue);font-weight:600;text-decoration:none}
+
+/* Estimator */
+.sizes{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:520px){.sizes{grid-template-columns:repeat(4,1fr)}}
+.size{font:inherit;text-align:left;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;line-height:1.2}
+.size b{display:block;font-family:var(--display);font-size:19px}
+.size span{font-size:12px;color:var(--muted)}
+.size[aria-pressed=true]{border-color:var(--blue);background:var(--blue);color:#fff}
+.size[aria-pressed=true] span{color:#dfe5ff}
+.dims{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end}
+.dims .x{padding-bottom:10px;color:var(--muted);font-weight:600}
+.yn{display:flex;gap:6px;flex-wrap:wrap}
+.result{margin-top:14px;border-radius:12px;padding:16px;background:var(--soft);text-align:center}
+.result .lbl{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.result .big{font-family:var(--display);font-weight:700;font-size:clamp(38px,11vw,54px);line-height:1.05;margin:4px 0;color:var(--fg)}
+.result .sub{font-size:14px;color:var(--muted)}
+.incl{margin:10px 0 0;padding:0;list-style:none;font-size:14px;display:grid;grid-template-columns:1fr;gap:4px}
+@media(min-width:520px){.incl{grid-template-columns:1fr 1fr}}
+.incl li::before{content:"✓ ";color:var(--ok);font-weight:700}
+.fine{font-size:12px;color:var(--muted);margin-top:10px}
+</style>
+<!-- Google Ads tag: fill in GADS below once the conversion actions exist in the account. Loads nothing until then. -->
+<script>
+const GADS = { id:'AW-10839670202', lead:'GWKbCKTX0aQdELr74LAo', call:'8rm4CPGv5KsdELr74LAo' };   // Google Ads conversion tag + 'landscape' lead label (call = 'Website call/text tap' conversion, fired on tel:/sms: taps)
+if(GADS.id){ const s=document.createElement('script'); s.async=true; s.src='https://www.googletagmanager.com/gtag/js?id='+GADS.id; document.head.appendChild(s);
+  window.dataLayer=window.dataLayer||[]; window.gtag=function(){dataLayer.push(arguments)}; gtag('js',new Date()); gtag('config',GADS.id); }
+function gconv(kind){ try{ if(GADS.id && GADS[kind] && window.gtag) gtag('event','conversion',{send_to:GADS.id+'/'+GADS[kind]}); }catch(_){} }
+</script>
+<!-- Meta Pixel (same pixel as /lawn) -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','3914598668676670');fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=3914598668676670&ev=PageView&noscript=1"></noscript>
+</head>
+<body>
+<div class="band"><div class="in">
+  <div class="topline">
+    <img class="logo" src="../assets/logo.png" alt="Cardinal Landscape Associates">
+    <a class="phone" id="phoneLink" href="tel:7085271707"><small>Call or text</small><span>(708) 527-1707</span></a>
+  </div>
+  <img class="hero" src="../assets/projects/outdoor-walkway-patio.jpg" width="900" height="675" alt="Herringbone paver walkway and patio built by Cardinal" fetchpriority="high">
+  <h1>What does a paver patio cost? See your price in 30 seconds.</h1>
+  <p>Pick a size and get a real ballpark built from our own material and crew costs. Then we confirm the exact price at a free on-site visit.</p>
+  <div class="stats">
+    <div><b>8 yrs</b><span>in business</span></div>
+    <div><b>250+</b><span>projects built</span></div>
+    <div><b>4.8★</b><span>119 Google reviews</span></div>
+    <div><b>Oz</b><span>meets you on site</span></div>
+  </div>
+  <div class="deadline" id="deadline"><b>Book by Nov 30</b> to lock in 2026 pricing.<small>Financing available.</small></div>
+</div></div>
+
+<div class="wrap">
+
+<section class="card" id="calc">
+  <p class="step">Step 1 · Patio size</p>
+  <h2>How big is the patio?</h2>
+  <div class="sizes" id="sizes" role="group" aria-label="Patio size">
+    <button type="button" class="size" data-sf="200" data-l="20" data-w="10"><b>Small</b><span>~200 sq ft · 10×20 · bistro set</span></button>
+    <button type="button" class="size" data-sf="300" data-l="20" data-w="15"><b>Medium</b><span>~300 sq ft · 15×20 · table for 6</span></button>
+    <button type="button" class="size" data-sf="400" data-l="20" data-w="20"><b>Large</b><span>~400 sq ft · 20×20 · dining + lounge</span></button>
+    <button type="button" class="size" data-sf="600" data-l="30" data-w="20"><b>Extra large</b><span>~600 sq ft · 20×30 · entertaining</span></button>
+  </div>
+  <div class="field"><label>Or enter your own size (feet)</label>
+    <div class="dims">
+      <div><input type="number" id="len" inputmode="decimal" min="5" max="100" placeholder="Length" aria-label="Length in feet"></div>
+      <div class="x">×</div>
+      <div><input type="number" id="wid" inputmode="decimal" min="5" max="100" placeholder="Width" aria-label="Width in feet"></div>
+    </div>
+  </div>
+
+  <p class="step" style="margin-top:18px">Step 2 · What's there now?</p>
+  <div class="yn" id="removal" role="group" aria-label="Existing concrete">
+    <button type="button" class="chip" data-r="0" aria-pressed="true">Grass or dirt</button>
+    <button type="button" class="chip" data-r="1" aria-pressed="false">Old concrete patio to remove</button>
+  </div>
+
+  <div class="result" id="result" aria-live="polite">
+    <div class="lbl">Estimated price</div>
+    <div class="big" id="price">—</div>
+    <div class="sub" id="priceSub">Pick a size above</div>
+  </div>
+  <ul class="incl">
+    <li>Excavation &amp; soil haul-off</li>
+    <li>Geofabric under the base</li>
+    <li>6" compacted CA7 stone base</li>
+    <li>1" limestone bedding layer</li>
+    <li>Unilock Beacon Hill pavers</li>
+    <li>Joint sand &amp; concrete edge restraint</li>
+  </ul>
+  <p class="fine">Ballpark for a standard rectangular paver patio with normal access. Steps, walls, fire pits, curves, other paver styles and tight access are priced at the free on-site visit. Final price is set in your written, itemized quote.</p>
+  <div style="margin-top:12px"><a class="btn" href="#request" id="toForm">Lock in this price range — free on-site estimate</a></div>
+</section>
+
+<section class="card" id="request">
+  <p class="step">Free on-site estimate</p>
+  <h2>Get your exact price</h2>
+  <p class="hint" id="carry" style="margin:-6px 0 10px"></p>
+  <form id="book" style="position:relative">
+    <div class="field row c2" style="margin-top:0">
+      <div><label for="name">Name</label><input type="text" id="name" required autocomplete="name"></div>
+      <div><label for="phone">Phone</label><input type="tel" id="phone" required autocomplete="tel"></div>
+    </div>
+    <div class="field"><label>Best way to reach you?</label>
+      <div class="chips" id="pref" role="group" aria-label="Contact preference">
+        <button type="button" class="chip" data-c="Call">Call me</button>
+        <button type="button" class="chip" data-c="Text">Text me</button>
+        <button type="button" class="chip" data-c="Either">Either is fine</button>
+      </div></div>
+    <div class="field row c2">
+      <div><label for="city">City</label><input type="text" id="city" required autocomplete="address-level2" placeholder="City"></div>
+      <div><label for="state">State</label><select id="state" autocomplete="address-level1"><option value="IL">IL</option><option value="IN">IN</option></select></div>
+    </div>
+    <div class="field"><label>When?</label>
+      <div class="chips" id="timing" role="group" aria-label="Timing">
+        <button type="button" class="chip" data-w="As soon as possible">ASAP</button>
+        <button type="button" class="chip" data-w="This fall">This fall</button>
+        <button type="button" class="chip" data-w="Spring 2027">Spring 2027</button>
+        <button type="button" class="chip" data-w="Just exploring">Just exploring</button>
+      </div></div>
+    <details class="more">
+      <summary>Add more details (optional)</summary>
+      <div class="field"><label for="street">Street address</label><input type="text" id="street" autocomplete="street-address" placeholder="Street"></div>
+      <div class="field"><label for="email">Email</label><input type="email" id="email" autocomplete="email"></div>
+      <div class="field"><label for="notes">Anything else? (fire pit, wall, steps, paver style you like)</label><textarea id="notes"></textarea></div>
+    </details>
+    <div style="position:absolute;left:-9999px" aria-hidden="true"><label for="website">Website</label><input type="text" id="website" tabindex="-1" autocomplete="off"></div>
+    <div id="bookErr" class="notice err" hidden></div>
+    <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn" type="submit">Request my free estimate</button>
+      <span class="hint" style="margin:0">No obligation. Financing available.</span>
+    </div>
+  </form>
+  <div id="thanks" class="done" hidden>
+    <b id="thanksHead">Got it. We'll call you within one business day.</b>
+    <div id="thanksBody"></div>
+  </div>
+</section>
+
+<section aria-label="Customer reviews">
+  <div class="rhead"><b>★★★★★ 4.8 from 119 Google reviews</b><a href="https://maps.google.com/?cid=2332769720849916020" target="_blank" rel="noopener">Read them →</a></div>
+  <div class="rstrip">
+    <blockquote><div class="st">★★★★★</div><p>“Oz and his team were great! Oz was very responsive to our questions… We have had so many compliments to our new patio!”</p><cite>Kelly D. · paver patio</cite></blockquote>
+    <blockquote><div class="st">★★★★★</div><p>“16 by 16 paver patio and 13 by 15 gazebo… excellent job, it’s beautiful. I highly recommend this company if you want quality work!”</p><cite>Vincent D., Highland IN · paver patio &amp; gazebo</cite></blockquote>
+    <blockquote><div class="st">★★★★★</div><p>“Their work is top notch. Everything was done meticulously and professionally, and the project managers were great to work with.”</p><cite>Lindsay W., Oak Lawn IL · paver patio, gas fire pit &amp; regrading</cite></blockquote>
+    <blockquote><div class="st">★★★★★</div><p>“The patio came out amazing and the customer service was even better. Can’t go wrong!”</p><cite>Mitchell K., Crown Point IN · patio</cite></blockquote>
+  </div>
+</section>
+
+<p class="swap">Planning a fire pit, outdoor kitchen or wall too? <a href="../landscape/?p=outdoor">Tell us about the whole project →</a></p>
+<p class="foot">Cardinal Landscape Associates · 2249 Glenwood Dyer Rd, Lynwood, IL 60411 · Mon–Sat 8am–7pm · <a href="tel:7085271707">(708) 527-1707</a> · office@cardinallm.net · <a href="../privacy/">Privacy</a></p>
+</div>
+
+<script>
+const LEAD_ENDPOINT = 'https://cardinal-maint-quote.office-333.workers.dev/lead';
+const $ = id => document.getElementById(id);
+const q = new URLSearchParams(location.search);
+
+/* ---------- Pricing (Cardinal's own costs, Oct 2026) ----------
+   Materials per sq ft: geofabric $0.18 (+10%) · CA7 6" $1.08 (+20% compaction) · 3/8 chips 1" $0.18 · Beacon Hill 6cm $7.60 (+7% cuts) · joint sand $0.80
+   Concrete edge restraint: $26 per bag ($6 concrete + $20 fiber), 1 bag per 15 ft of perimeter
+   Labor: 2-man crew $150/hr all-in · 8 hr setup + 0.06 hr per sq ft (400 sq ft = 32 hrs)
+   Soil haul-off: dig ~9.4" (6" base + 1" bed + 6cm paver), +25% swell · cheaper of $120 per 5-yd truck or $450 per 20-yd semi
+   Price = cost × 1.5 · shown as ±10% · old concrete removal adds $6/sq ft, $1,200 minimum */
+const P = { matSf:0.18+1.08+0.18+7.60+0.80, edgeBag:26, edgeFtPerBag:15, crewHr:150, setupHr:8, hrPerSf:0.06,
+            digIn:9.4, swell:1.25, truckYd:5, truck:120, semiYd:20, semi:450, markup:1.5, spread:0.10, removalSf:6, removalMin:1200 };
+function estimate(sf, perim, removal){
+  const mat = sf*P.matSf + Math.ceil(perim/P.edgeFtPerBag)*P.edgeBag;
+  const labor = (P.setupHr + P.hrPerSf*sf)*P.crewHr;
+  const yd = sf*(P.digIn/12)/27*P.swell;
+  const haul = Math.min(Math.ceil(yd/P.truckYd)*P.truck, Math.ceil(yd/P.semiYd)*P.semi);
+  let price = (mat+labor+haul)*P.markup;
+  if(removal) price += Math.max(P.removalSf*sf, P.removalMin);
+  const r100 = x => Math.round(x/100)*100;
+  return { low:r100(price*(1-P.spread)), high:r100(price*(1+P.spread)), mid:Math.round(price) };
+}
+
+let sel = { sf:0, l:0, w:0 }, removal=false, est=null;
+const money = n => '$'+n.toLocaleString('en-US');
+function render(){
+  if(!sel.sf){ $('price').textContent='—'; $('priceSub').textContent='Pick a size above'; est=null; return; }
+  const perim = (sel.l && sel.w) ? 2*(sel.l+sel.w) : 4*Math.sqrt(sel.sf);
+  est = estimate(sel.sf, perim, removal);
+  $('price').textContent = money(est.low)+' – '+money(est.high);
+  $('priceSub').textContent = Math.round(sel.sf).toLocaleString('en-US')+' sq ft'+(sel.l&&sel.w?' ('+sel.l+' × '+sel.w+' ft)':'')+' · '+(removal?'includes removing the old concrete':'on grass or dirt')+' · Beacon Hill pavers';
+  $('carry').textContent = 'Your ballpark: '+money(est.low)+' – '+money(est.high)+' for '+Math.round(sel.sf)+' sq ft. We confirm it on site.';
+  try{ if(!render.sent && window.fbq){ fbq('track','ViewContent',{content_name:'patio_estimate'}); render.sent=1; } }catch(_){}
+}
+$('sizes').addEventListener('click', e=>{ const b=e.target.closest('.size'); if(!b) return;
+  document.querySelectorAll('#sizes .size').forEach(x=>x.setAttribute('aria-pressed', x===b));
+  sel = { sf:+b.dataset.sf, l:+b.dataset.l, w:+b.dataset.w }; $('len').value=''; $('wid').value=''; render(); });
+function fromDims(){ const l=parseFloat($('len').value), w=parseFloat($('wid').value);
+  if(l>0 && w>0){ document.querySelectorAll('#sizes .size').forEach(x=>x.setAttribute('aria-pressed',false)); sel={ sf:Math.min(l*w,5000), l, w }; render(); } }
+$('len').addEventListener('input', fromDims); $('wid').addEventListener('input', fromDims);
+$('removal').addEventListener('click', e=>{ const b=e.target.closest('.chip'); if(!b) return; removal = b.dataset.r==='1';
+  document.querySelectorAll('#removal .chip').forEach(x=>x.setAttribute('aria-pressed', x===b)); render(); });
+if(q.get('sf')){ sel={ sf:+q.get('sf'), l:0, w:0 }; render(); }
+
+let timing='', pref='';
+$('timing').addEventListener('click', e=>{ const b=e.target.closest('.chip'); if(!b) return; timing=b.dataset.w; document.querySelectorAll('#timing .chip').forEach(x=>x.setAttribute('aria-pressed', x===b)); });
+$('pref').addEventListener('click', e=>{ const b=e.target.closest('.chip'); if(!b) return; pref=b.dataset.c; document.querySelectorAll('#pref .chip').forEach(x=>x.setAttribute('aria-pressed', x===b)); });
+
+/* Text links open with a message already typed. */
+const fillSms=()=>document.querySelectorAll('a[href^="sms:"]').forEach(a=>{ a.href='sms:+17085271707?&body='+encodeURIComponent("Hi Cardinal! I used your patio price estimator and I'd like a free estimate for a paver patio."); });
+fillSms(); document.addEventListener('DOMContentLoaded', fillSms);
+if(Date.now() > Date.parse('2026-12-01T06:00:00Z')) $('deadline').remove();
+
+const source = q.get('gclid') ? 'Google Ads' : q.get('fbclid') ? 'Facebook' : (q.get('utm_source') || (document.referrer ? 'Referral: '+document.referrer.replace(/^https?:\/\//,'').split('/')[0] : 'Direct'));
+document.addEventListener('click', e=>{ const a=e.target.closest('a[href^="tel:"],a[href^="sms:"]'); if(!a) return; gconv('call'); try{ if(window.fbq) fbq('track','Contact'); }catch(_){} });
+
+$('book').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const err=$('bookErr'); err.hidden=true;
+  const size = sel.sf ? Math.round(sel.sf)+' sq ft'+(sel.l&&sel.w?' ('+sel.l+'×'+sel.w+' ft)':'') : 'size not picked';
+  const estTxt = est ? money(est.low)+' – '+money(est.high) : '(no estimate shown)';
+  const summary = 'Patio estimator: '+size+' · '+(removal?'remove old concrete patio':'grass/dirt')+' · shown '+estTxt+' (Beacon Hill)';
+  const payload = {
+    kind:'landscape', source, variant:'patio-estimator',
+    name:$('name').value.trim(), phone:$('phone').value.trim(), email:$('email').value.trim(), hp:$('website').value,
+    notes: summary,
+    address:{street:$('street').value.trim() || 'Address to confirm on call', city:$('city').value.trim(), state:$('state').value, zip:''},
+    project_types:['Paver patio'].concat(removal?['Remove old concrete patio']:[]), budget:'Estimator showed '+estTxt+' for '+size, timing,
+    contact_pref:pref||'Either', customer_notes:['Contact by: '+(pref||'Either'), summary, $('notes').value.trim()].filter(Boolean).join(' · '),
+    patio_sf: Math.round(sel.sf||0), removal, estimate: est,
+    commercial:false, landscape_interest:true, in_area:true, lot_sf:0, lot_source:'n/a', services:[], total:0, selected:{}, quote:{}, page:location.href,
+  };
+  const btn=e.target.querySelector('button[type=submit]');
+  btn.disabled=true; btn.textContent='Sending…';
+  try{
+    const r=await fetch(LEAD_ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.ok) throw new Error(d.error||('Request failed ('+r.status+')'));
+  }catch(ex){
+    err.textContent="We couldn't send that just now ("+ex.message+"). Call or text (708) 527-1707 and we'll get you scheduled.";
+    err.hidden=false; btn.disabled=false; btn.textContent='Request my free estimate'; return;
+  }
+  gconv('lead');
+  try{ if(window.fbq) fbq('track','Lead',{content_name:'patio_estimator'}); }catch(_){}
+  if(pref==='Text') $('thanksHead').textContent="Got it. We'll text you within one business day.";
+  $('thanksBody').innerHTML = `<p class="hint">${size} · ${removal?'removing old concrete':'grass or dirt'} · ballpark ${estTxt}</p>
+    <p class="hint">Want to talk sooner? Call or text <a href="tel:7085271707" style="color:var(--blue);font-weight:600;text-decoration:none">(708) 527-1707</a>, Mon–Sat 8–7.</p>`;
+  $('book').hidden=true; $('thanks').hidden=false; $('thanks').scrollIntoView({behavior:'smooth',block:'center'});
+});
+</script>
+<nav class="callbar" aria-label="Contact">
+  <a class="primary" href="tel:7085271707">Call</a>
+  <a href="sms:+17085271707">Text</a>
+  <a href="#calc">My price</a>
+</nav>
+</body>
+</html>

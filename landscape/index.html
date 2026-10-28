@@ -326,7 +326,7 @@ $('book').addEventListener('submit', async e=>{
     kind:'landscape', source, variant,
     name:$('name').value.trim(), phone:$('phone').value.trim(), email:$('email').value.trim(), notes:detail, hp:$('website').value,
     address:{street:$('street').value.trim() || 'Address to confirm on call', city:$('city').value.trim(), state:$('state').value, zip:''},
-    project_types:types, budget:$('budget').value, timing, contact_pref:pref||'Either', customer_notes:$('notes').value.trim(),
+    project_types:types, budget:$('budget').value, timing, contact_pref:pref||'Either', customer_notes:['Contact by: '+(pref||'Either'), $('notes').value.trim()].filter(Boolean).join(' · '),
     commercial:false, landscape_interest:true, in_area:true, lot_sf:0, lot_source:'n/a', services:[], total:0, selected:{}, quote:{}, page:location.href,
   };
   const btn=e.target.querySelector('button[type=submit]');
