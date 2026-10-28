@@ -137,6 +137,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 @media(min-width:520px){.incl{grid-template-columns:1fr 1fr}}
 .incl li::before{content:"✓ ";color:var(--ok);font-weight:700}
 .fine{font-size:12px;color:var(--muted);margin-top:10px}
+.textme{margin-top:16px;border-top:1px dashed var(--line);padding-top:14px}
 </style>
 <!-- Google Ads tag: fill in GADS below once the conversion actions exist in the account. Loads nothing until then. -->
 <script>
@@ -178,7 +179,7 @@ fbq('init','3914598668676670');fbq('track','PageView');
   <div class="sizes" id="sizes" role="group" aria-label="Patio size">
     <button type="button" class="size" data-sf="200" data-l="20" data-w="10"><b>Small</b><span>~200 sq ft · 10×20 · bistro set</span></button>
     <button type="button" class="size" data-sf="300" data-l="20" data-w="15"><b>Medium</b><span>~300 sq ft · 15×20 · table for 6</span></button>
-    <button type="button" class="size" data-sf="400" data-l="20" data-w="20"><b>Large</b><span>~400 sq ft · 20×20 · dining + lounge</span></button>
+    <button type="button" class="size" data-sf="400" data-l="20" data-w="20" aria-pressed="true"><b>Large</b><span>~400 sq ft · 20×20 · dining + lounge</span></button>
     <button type="button" class="size" data-sf="600" data-l="30" data-w="20"><b>Extra large</b><span>~600 sq ft · 20×30 · entertaining</span></button>
   </div>
   <div class="field"><label>Or enter your own size (feet)</label>
@@ -195,6 +196,13 @@ fbq('init','3914598668676670');fbq('track','PageView');
     <button type="button" class="chip" data-r="1" aria-pressed="false">Old concrete patio to remove</button>
   </div>
 
+  <p class="step" style="margin-top:18px">Step 3 · Paver style</p>
+  <div class="yn" id="style" role="group" aria-label="Paver style">
+    <button type="button" class="chip" data-p="westport" aria-pressed="true">Classic · Westport</button>
+    <button type="button" class="chip" data-p="beacon" aria-pressed="false">Beacon Hill</button>
+    <button type="button" class="chip" data-p="premium" aria-pressed="false">Premium · Umbriano</button>
+  </div>
+
   <div class="result" id="result" aria-live="polite">
     <div class="lbl">Estimated price</div>
     <div class="big" id="price">—</div>
@@ -205,11 +213,24 @@ fbq('init','3914598668676670');fbq('track','PageView');
     <li>Geofabric under the base</li>
     <li>6" compacted CA7 stone base</li>
     <li>1" limestone bedding layer</li>
-    <li>Unilock Westport pavers</li>
+    <li id="pavLi">Unilock Westport pavers</li>
     <li>Joint sand &amp; concrete edge restraint</li>
   </ul>
-  <p class="fine">Ballpark for a standard rectangular paver patio with normal access. Upgrade pavers like Beacon Hill or Umbriano, plus steps, walls, fire pits, curves and tight access, are priced at the free on-site visit. Final price is set in your written, itemized quote.</p>
+  <p class="fine">Ballpark for a standard rectangular paver patio with normal access. Steps, walls, fire pits, curves and tight access are priced at the free on-site visit. Final price is set in your written, itemized quote.</p>
   <div style="margin-top:12px"><a class="btn" href="#request" id="toForm">Lock in this price range — free on-site estimate</a></div>
+  <div class="textme" id="textme">
+    <p class="hint" id="textTxt" style="margin:0 0 8px"></p>
+    <form id="tform" style="position:relative">
+      <div class="row c3">
+        <div><label for="tname">First name</label><input type="text" id="tname" required autocomplete="given-name"></div>
+        <div><label for="tphone">Mobile</label><input type="tel" id="tphone" required autocomplete="tel"></div>
+        <div><label for="tcity">City</label><input type="text" id="tcity" required autocomplete="address-level2"></div>
+      </div>
+      <div id="tErr" class="notice err" hidden></div>
+      <button class="btn sec" type="submit" style="margin-top:10px">Text me this estimate</button>
+    </form>
+    <p class="hint" id="tDone" hidden></p>
+  </div>
 </section>
 
 <section class="card" id="request">
@@ -277,15 +298,17 @@ const $ = id => document.getElementById(id);
 const q = new URLSearchParams(location.search);
 
 /* ---------- Pricing (Cardinal's own costs, Oct 2026) ----------
-   Materials per sq ft: geofabric $0.18 (+10%) · CA7 6" $1.08 (+20% compaction) · 3/8 chips 1" $0.18 · Unilock Westport $5.30 ($4.95 +7% cuts) · joint sand $0.80
+   Materials per sq ft: geofabric $0.18 (+10%) · CA7 6" $1.08 (+20% compaction) · 3/8 chips 1" $0.18 · pavers (+7% cuts) · joint sand $0.80
+   Pavers (Alsip landscaper price): Westport $4.95 · Beacon Hill 6cm $7.10 (avg Flagstone/Smooth) · Umbriano 6cm random $11.47
    Concrete edge restraint: $26 per bag ($6 concrete + $20 fiber), 1 bag per 15 ft of perimeter
    Labor: 2-man crew $150/hr all-in · 8 hr setup + 0.06 hr per sq ft (400 sq ft = 32 hrs)
    Soil haul-off: dig ~9.4" (6" base + 1" bed + 6cm paver), +25% swell · cheaper of $120 per 5-yd truck or $450 per 20-yd semi
    Price = cost × 1.5 · shown as ±10% · old concrete removal adds $6/sq ft, $1,200 minimum */
-const P = { matSf:0.18+1.08+0.18+5.30+0.80, edgeBag:26, edgeFtPerBag:15, crewHr:150, setupHr:8, hrPerSf:0.06,
+const PAVERS = { westport:{name:'Unilock Westport', sf:4.95}, beacon:{name:'Unilock Beacon Hill', sf:7.10}, premium:{name:'Unilock Umbriano', sf:11.47} };
+const P = { baseSf:0.18+1.08+0.18+0.80, waste:1.07, edgeBag:26, edgeFtPerBag:15, crewHr:150, setupHr:8, hrPerSf:0.06,
             digIn:9.4, swell:1.25, truckYd:5, truck:120, semiYd:20, semi:450, markup:1.5, spread:0.10, removalSf:6, removalMin:1200 };
-function estimate(sf, perim, removal){
-  const mat = sf*P.matSf + Math.ceil(perim/P.edgeFtPerBag)*P.edgeBag;
+function estimate(sf, perim, removal, paver){
+  const mat = sf*(P.baseSf + PAVERS[paver].sf*P.waste) + Math.ceil(perim/P.edgeFtPerBag)*P.edgeBag;
   const labor = (P.setupHr + P.hrPerSf*sf)*P.crewHr;
   const yd = sf*(P.digIn/12)/27*P.swell;
   const haul = Math.min(Math.ceil(yd/P.truckYd)*P.truck, Math.ceil(yd/P.semiYd)*P.semi);
@@ -295,16 +318,18 @@ function estimate(sf, perim, removal){
   return { low:r100(price*(1-P.spread)), high:r100(price*(1+P.spread)), mid:Math.round(price) };
 }
 
-let sel = { sf:0, l:0, w:0 }, removal=false, est=null;
+let sel = { sf:400, l:20, w:20 }, removal=false, est=null, paver='westport';
 const money = n => '$'+n.toLocaleString('en-US');
 function render(){
   if(!sel.sf){ $('price').textContent='—'; $('priceSub').textContent='Pick a size above'; est=null; return; }
   const perim = (sel.l && sel.w) ? 2*(sel.l+sel.w) : 4*Math.sqrt(sel.sf);
-  est = estimate(sel.sf, perim, removal);
+  est = estimate(sel.sf, perim, removal, paver);
+  $('pavLi').textContent = PAVERS[paver].name+' pavers';
   $('price').textContent = money(est.low)+' – '+money(est.high);
-  $('priceSub').textContent = Math.round(sel.sf).toLocaleString('en-US')+' sq ft'+(sel.l&&sel.w?' ('+sel.l+' × '+sel.w+' ft)':'')+' · '+(removal?'includes removing the old concrete':'on grass or dirt')+' · Unilock Westport pavers';
+  $('priceSub').textContent = Math.round(sel.sf).toLocaleString('en-US')+' sq ft'+(sel.l&&sel.w?' ('+sel.l+' × '+sel.w+' ft)':'')+' · '+(removal?'includes removing the old concrete':'on grass or dirt')+' · '+PAVERS[paver].name+' pavers';
   $('carry').textContent = 'Your ballpark: '+money(est.low)+' – '+money(est.high)+' for '+Math.round(sel.sf)+' sq ft. We confirm it on site.';
-  try{ if(!render.sent && window.fbq){ fbq('track','ViewContent',{content_name:'patio_estimate'}); render.sent=1; } }catch(_){}
+  $('textTxt').textContent = 'Not ready for a visit? We’ll text you this estimate ('+money(est.low)+' – '+money(est.high)+') so you have it.';
+  try{ if(render.ready && !render.sent && window.fbq){ fbq('track','ViewContent',{content_name:'patio_estimate'}); render.sent=1; } }catch(_){}
 }
 $('sizes').addEventListener('click', e=>{ const b=e.target.closest('.size'); if(!b) return;
   document.querySelectorAll('#sizes .size').forEach(x=>x.setAttribute('aria-pressed', x===b));
@@ -312,9 +337,13 @@ $('sizes').addEventListener('click', e=>{ const b=e.target.closest('.size'); if(
 function fromDims(){ const l=parseFloat($('len').value), w=parseFloat($('wid').value);
   if(l>0 && w>0){ document.querySelectorAll('#sizes .size').forEach(x=>x.setAttribute('aria-pressed',false)); sel={ sf:Math.min(l*w,5000), l, w }; render(); } }
 $('len').addEventListener('input', fromDims); $('wid').addEventListener('input', fromDims);
+$('style').addEventListener('click', e=>{ const b=e.target.closest('.chip'); if(!b) return; paver=b.dataset.p;
+  document.querySelectorAll('#style .chip').forEach(x=>x.setAttribute('aria-pressed', x===b)); render(); });
 $('removal').addEventListener('click', e=>{ const b=e.target.closest('.chip'); if(!b) return; removal = b.dataset.r==='1';
   document.querySelectorAll('#removal .chip').forEach(x=>x.setAttribute('aria-pressed', x===b)); render(); });
-if(q.get('sf')){ sel={ sf:+q.get('sf'), l:0, w:0 }; render(); }
+if(q.get('sf')){ sel={ sf:+q.get('sf'), l:0, w:0 }; document.querySelectorAll('#sizes .size').forEach(x=>x.setAttribute('aria-pressed', +x.dataset.sf===sel.sf)); }
+render(); render.ready=1;
+document.querySelectorAll('#calc .size,#calc .chip,#len,#wid').forEach(el=>el.addEventListener(el.tagName==='INPUT'?'input':'click',()=>{ try{ if(!render.sent && window.fbq){ fbq('track','ViewContent',{content_name:'patio_estimate'}); render.sent=1; } }catch(_){} }));
 
 let timing='', pref='';
 $('timing').addEventListener('click', e=>{ const b=e.target.closest('.chip'); if(!b) return; timing=b.dataset.w; document.querySelectorAll('#timing .chip').forEach(x=>x.setAttribute('aria-pressed', x===b)); });
@@ -328,12 +357,30 @@ if(Date.now() > Date.parse('2026-12-01T06:00:00Z')) $('deadline').remove();
 const source = q.get('gclid') ? 'Google Ads' : q.get('fbclid') ? 'Facebook' : (q.get('utm_source') || (document.referrer ? 'Referral: '+document.referrer.replace(/^https?:\/\//,'').split('/')[0] : 'Direct'));
 document.addEventListener('click', e=>{ const a=e.target.closest('a[href^="tel:"],a[href^="sms:"]'); if(!a) return; gconv('call'); try{ if(window.fbq) fbq('track','Contact'); }catch(_){} });
 
+$('tform').addEventListener('submit', async e=>{
+  e.preventDefault(); const err=$('tErr'); err.hidden=true;
+  const size = Math.round(sel.sf)+' sq ft'+(sel.l&&sel.w?' ('+sel.l+'×'+sel.w+' ft)':'');
+  const estTxt = money(est.low)+' – '+money(est.high);
+  const summary = 'TEXT THIS ESTIMATE: '+estTxt+' · '+size+' · '+(removal?'remove old concrete patio':'grass/dirt')+' · '+PAVERS[paver].name;
+  const payload = { kind:'landscape', source, variant:'patio-estimator-text', name:$('tname').value.trim(), phone:$('tphone').value.trim(), email:'', hp:'',
+    notes:summary, address:{street:'Address to confirm by text', city:$('tcity').value.trim(), state:'IL', zip:''},
+    project_types:['Paver patio','Text me the estimate'], budget:'Estimator showed '+estTxt+' for '+size, timing:'Not ready yet — wants the estimate by text',
+    contact_pref:'Text', customer_notes:summary, patio_sf:Math.round(sel.sf), removal, estimate:est,
+    commercial:false, landscape_interest:true, in_area:true, lot_sf:0, lot_source:'n/a', services:[], total:0, selected:{}, quote:{}, page:location.href };
+  const btn=e.target.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Sending…';
+  try{ const r=await fetch(LEAD_ENDPOINT,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json().catch(()=>({})); if(!r.ok||!d.ok) throw new Error(d.error||('Request failed ('+r.status+')')); }
+  catch(ex){ err.textContent="Couldn't send that just now. Text us at (708) 527-1707 and we'll reply with your estimate."; err.hidden=false; btn.disabled=false; btn.textContent='Text me this estimate'; return; }
+  gconv('lead'); try{ if(window.fbq) fbq('track','Lead',{content_name:'patio_estimator_text'}); }catch(_){}
+  $('tform').hidden=true; $('tDone').hidden=false;
+  $('tDone').innerHTML='<b>Got it, '+payload.name.replace(/</g,'')+'.</b> We’ll text your estimate ('+estTxt+') to '+payload.phone.replace(/</g,'')+' during business hours, Mon–Sat 8–7. Reply any time to set up a free visit.';
+});
+
 $('book').addEventListener('submit', async e=>{
   e.preventDefault();
   const err=$('bookErr'); err.hidden=true;
   const size = sel.sf ? Math.round(sel.sf)+' sq ft'+(sel.l&&sel.w?' ('+sel.l+'×'+sel.w+' ft)':'') : 'size not picked';
   const estTxt = est ? money(est.low)+' – '+money(est.high) : '(no estimate shown)';
-  const summary = 'Patio estimator: '+size+' · '+(removal?'remove old concrete patio':'grass/dirt')+' · shown '+estTxt+' (Westport)';
+  const summary = 'Patio estimator: '+size+' · '+(removal?'remove old concrete patio':'grass/dirt')+' · '+PAVERS[paver].name+' · shown '+estTxt;
   const payload = {
     kind:'landscape', source, variant:'patio-estimator',
     name:$('name').value.trim(), phone:$('phone').value.trim(), email:$('email').value.trim(), hp:$('website').value,
