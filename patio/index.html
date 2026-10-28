@@ -205,10 +205,10 @@ fbq('init','3914598668676670');fbq('track','PageView');
     <li>Geofabric under the base</li>
     <li>6" compacted CA7 stone base</li>
     <li>1" limestone bedding layer</li>
-    <li>Unilock Beacon Hill pavers</li>
+    <li>Unilock Westport pavers</li>
     <li>Joint sand &amp; concrete edge restraint</li>
   </ul>
-  <p class="fine">Ballpark for a standard rectangular paver patio with normal access. Steps, walls, fire pits, curves, other paver styles and tight access are priced at the free on-site visit. Final price is set in your written, itemized quote.</p>
+  <p class="fine">Ballpark for a standard rectangular paver patio with normal access. Upgrade pavers like Beacon Hill or Umbriano, plus steps, walls, fire pits, curves and tight access, are priced at the free on-site visit. Final price is set in your written, itemized quote.</p>
   <div style="margin-top:12px"><a class="btn" href="#request" id="toForm">Lock in this price range — free on-site estimate</a></div>
 </section>
 
@@ -277,12 +277,12 @@ const $ = id => document.getElementById(id);
 const q = new URLSearchParams(location.search);
 
 /* ---------- Pricing (Cardinal's own costs, Oct 2026) ----------
-   Materials per sq ft: geofabric $0.18 (+10%) · CA7 6" $1.08 (+20% compaction) · 3/8 chips 1" $0.18 · Beacon Hill 6cm $7.60 (+7% cuts) · joint sand $0.80
+   Materials per sq ft: geofabric $0.18 (+10%) · CA7 6" $1.08 (+20% compaction) · 3/8 chips 1" $0.18 · Unilock Westport $5.30 ($4.95 +7% cuts) · joint sand $0.80
    Concrete edge restraint: $26 per bag ($6 concrete + $20 fiber), 1 bag per 15 ft of perimeter
    Labor: 2-man crew $150/hr all-in · 8 hr setup + 0.06 hr per sq ft (400 sq ft = 32 hrs)
    Soil haul-off: dig ~9.4" (6" base + 1" bed + 6cm paver), +25% swell · cheaper of $120 per 5-yd truck or $450 per 20-yd semi
    Price = cost × 1.5 · shown as ±10% · old concrete removal adds $6/sq ft, $1,200 minimum */
-const P = { matSf:0.18+1.08+0.18+7.60+0.80, edgeBag:26, edgeFtPerBag:15, crewHr:150, setupHr:8, hrPerSf:0.06,
+const P = { matSf:0.18+1.08+0.18+5.30+0.80, edgeBag:26, edgeFtPerBag:15, crewHr:150, setupHr:8, hrPerSf:0.06,
             digIn:9.4, swell:1.25, truckYd:5, truck:120, semiYd:20, semi:450, markup:1.5, spread:0.10, removalSf:6, removalMin:1200 };
 function estimate(sf, perim, removal){
   const mat = sf*P.matSf + Math.ceil(perim/P.edgeFtPerBag)*P.edgeBag;
@@ -302,7 +302,7 @@ function render(){
   const perim = (sel.l && sel.w) ? 2*(sel.l+sel.w) : 4*Math.sqrt(sel.sf);
   est = estimate(sel.sf, perim, removal);
   $('price').textContent = money(est.low)+' – '+money(est.high);
-  $('priceSub').textContent = Math.round(sel.sf).toLocaleString('en-US')+' sq ft'+(sel.l&&sel.w?' ('+sel.l+' × '+sel.w+' ft)':'')+' · '+(removal?'includes removing the old concrete':'on grass or dirt')+' · Beacon Hill pavers';
+  $('priceSub').textContent = Math.round(sel.sf).toLocaleString('en-US')+' sq ft'+(sel.l&&sel.w?' ('+sel.l+' × '+sel.w+' ft)':'')+' · '+(removal?'includes removing the old concrete':'on grass or dirt')+' · Unilock Westport pavers';
   $('carry').textContent = 'Your ballpark: '+money(est.low)+' – '+money(est.high)+' for '+Math.round(sel.sf)+' sq ft. We confirm it on site.';
   try{ if(!render.sent && window.fbq){ fbq('track','ViewContent',{content_name:'patio_estimate'}); render.sent=1; } }catch(_){}
 }
@@ -333,7 +333,7 @@ $('book').addEventListener('submit', async e=>{
   const err=$('bookErr'); err.hidden=true;
   const size = sel.sf ? Math.round(sel.sf)+' sq ft'+(sel.l&&sel.w?' ('+sel.l+'×'+sel.w+' ft)':'') : 'size not picked';
   const estTxt = est ? money(est.low)+' – '+money(est.high) : '(no estimate shown)';
-  const summary = 'Patio estimator: '+size+' · '+(removal?'remove old concrete patio':'grass/dirt')+' · shown '+estTxt+' (Beacon Hill)';
+  const summary = 'Patio estimator: '+size+' · '+(removal?'remove old concrete patio':'grass/dirt')+' · shown '+estTxt+' (Westport)';
   const payload = {
     kind:'landscape', source, variant:'patio-estimator',
     name:$('name').value.trim(), phone:$('phone').value.trim(), email:$('email').value.trim(), hp:$('website').value,
